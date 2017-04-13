@@ -1,5 +1,5 @@
 import tensorflow as tf
-
+from tensorflow.python.ops import variable_scope as vs
 
 class Model():
     def __init__(self, args):
@@ -27,10 +27,26 @@ class Model():
     def LSTM_model(self):
         with tf.name_scope("LSTM") as scope:
             cell = tf.nn.rnn_cell.LSTMCell(self.hidden_size)
+
             cell = tf.nn.rnn_cell.MultiRNNCell([cell] * self.hidden_layers)
+
             cell = tf.nn.rnn_cell.DropoutWrapper(
                 cell, output_keep_prob=self.drop_out)
             output, _ = tf.nn.rnn(cell, self.input_data, dtype=tf.float32)
+            self.y_pred = tf.matmul(output[-1], self.W_out) + self.b_out
+
+    def bidir_LSTM_model(self):
+        with tf.name_scope("bidir_LSTM") as scope:
+            assert self.hidden_size%2 == 0, "hidden_size must be even number for bidir-LSTM"
+            cell = tf.nn.rnn_cell.LSTMCell(self.hidden_size/2)
+            cells_fw = [cell] * self.hidden_layers
+            cells_bw = [cell] * self.hidden_layers
+
+            pre_layer = self.input_data
+            for i, (cell_fw, cell_bw) in enumerate(zip(cells_fw, cells_bw)):
+                with vs.variable_scope("cell{}".format(i)) as cell_scope:
+                    pre_layer, _, _=tf.nn.bidirectional_rnn(cell_fw, cell_bw, pre_layer, dtype=tf.float32)
+            output = pre_layer
             self.y_pred = tf.matmul(output[-1], self.W_out) + self.b_out
 
     def Evaluating(self):
@@ -41,8 +57,9 @@ class Model():
             self.train_op = tf.train.AdamOptimizer(
                 learning_rate=self.learning_rate).minimize(self.loss)
             self.correct_pred = tf.equal(tf.argmax(self.y_pred, 1), self.y)
-            self.accuracy = tf.reduce_mean(tf.cast(self.correct_pred, tf.float32))
+            self.accuracy = tf.reduce_mean(
+                tf.cast(self.correct_pred, tf.float32))
 
-            #calculate training parameters number
+            # calculate training parameters number
             tvars = tf.trainable_variables()
             self.numel = tf.reduce_sum([tf.size(var) for var in tvars])

@@ -53,6 +53,7 @@ def main():
     model.Conv_LSTM_model()
     model.Evaluating()
     #=======step 4: start training===========
+    
     train_cost_list = []
     test_cost_list = []
     test_AUC_list = []

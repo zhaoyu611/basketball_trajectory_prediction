@@ -3,7 +3,7 @@ import tensorflow as tf
 from dataloader import DataLoad
 import argparse
 from model import Model
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 import sklearn
 from sklearn import metrics
 
@@ -50,7 +50,7 @@ def main():
     y_test = dl.data['y_test']
     #=======step 3: construct model==========
     model = Model(args)
-    model.CNN_model()
+    model.LSTM_model()
     model.Evaluating()
     #=======step 4: start training===========
     
@@ -76,12 +76,16 @@ def main():
             fetch = [model.accuracy, model.cost, model.y_pred, model.numel]
             test_acc, test_cost, y_pred, numel = sess.run(fetch, feed_dict=feed_dict)
             test_AUC = sklearn.metrics.roc_auc_score(y_test, y_pred[:, 1])
+            print "at {} epoch, the training cost is {}, the training accuracy is {}".format(i, train_cost, train_acc)
+            print "at {} epoch, the test cost is {}, the test accuracy is {}".format(i, test_cost, test_acc)
             print "at {} epoch, the test AUC is {}".format(i, test_AUC)
+            print "------------------------------------------------------"
             test_AUC_list.append(test_AUC)
             test_cost_list.append(test_cost)
 
         best_AUC = max(test_AUC_list)
         best_AUC_ind = test_AUC_list.index(best_AUC)
+        print "========================================================"
         print "Finally, the best test AUC is {} at {} epoch,".format(best_AUC, best_AUC_ind)
         print "Finally, the model has {} parameters".format(numel)
     #========step 5: draw results===============

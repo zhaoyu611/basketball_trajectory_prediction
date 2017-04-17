@@ -50,7 +50,7 @@ def main():
     y_test = dl.data['y_test']
     #=======step 3: construct model==========
     model = Model(args)
-    model.Conv_LSTM_model()
+    model.CNN_model()
     model.Evaluating()
     #=======step 4: start training===========
     

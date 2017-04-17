@@ -156,13 +156,26 @@ class Model():
             self.loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
                 self.y_pred, self.y)
             self.cost = tf.reduce_mean(self.loss)
-            self.train_op = tf.train.AdamOptimizer(
-                learning_rate=self.learning_rate).minimize(self.loss)
+            
+            # global_step = tf.Variable(0, trainable=False)
+            # lr = tf.train.exponential_decay(self.learning_rate, global_step, 14000, 0.95, staircase=True)
+            # self.train_op = tf.train.AdamOptimizer(
+            #     learning_rate=self.learning_rate).minimize(self.cost)
+            
+
+            # self.train_op = tf.train.AdamOptimizer(
+            #     learning_rate=self.learning_rate).minimize(self.cost)
+            
+            tvars = tf.trainable_variables()
+            grads,_ = tf.clip_by_global_norm(tf.gradients(self.cost, tvars), 0.5)
+            optimizer = tf.train.AdamOptimizer(self.learning_rate)
+            self.train_op = optimizer.apply_gradients(zip(grads, tvars))
+
             self.correct_pred = tf.equal(tf.argmax(self.y_pred, 1), self.y)
             
             self.accuracy = tf.reduce_mean(
                 tf.cast(self.correct_pred, tf.float32))
 
             # calculate training parameters number
-            tvars = tf.trainable_variables()
+
             self.numel = tf.reduce_sum([tf.size(var) for var in tvars])

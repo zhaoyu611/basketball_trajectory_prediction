@@ -29,7 +29,7 @@ class Model():
 
     def LSTM_model(self):
         with tf.name_scope("LSTM") as scope:
-            cell = tf.nn.rnn_cell.LSTMCell(self.hidden_size)
+            cell = tf.nn.rnn_cell.LSTMCell(self.hidden_size, use_peepholes=True)
 
             cell = tf.nn.rnn_cell.MultiRNNCell([cell] * self.hidden_layers)
 
@@ -167,8 +167,10 @@ class Model():
             #     learning_rate=self.learning_rate).minimize(self.cost)
             
             tvars = tf.trainable_variables()
-            grads,_ = tf.clip_by_global_norm(tf.gradients(self.cost, tvars), 0.5)
-            optimizer = tf.train.AdamOptimizer(self.learning_rate)
+            grads,_ = tf.clip_by_global_norm(tf.gradients(self.cost, tvars), 10)
+            global_step = tf.Variable(0, trainable=False)
+            lr = tf.train.exponential_decay(self.learning_rate, global_step, 14000, 0.95, staircase=True)
+            optimizer = tf.train.AdamOptimizer(lr)
             self.train_op = optimizer.apply_gradients(zip(grads, tvars))
 
             self.correct_pred = tf.equal(tf.argmax(self.y_pred, 1), self.y)

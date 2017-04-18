@@ -55,10 +55,6 @@ class Model():
             outputs[-1] = tf.nn.dropout(outputs[-1], self.drop_out)
             self.y_pred = tf.matmul(outputs[-1], self.W_out) + self.b_out
 
-    def Conv_LSTM_model(self):
-        """Here we have 2 Conv layers, followed by LSTM layers
-
-        """
         with tf.name_scope('Conv_layer') as scope:
             # reshape the input data for Conv_LSTM
             conv_inputs = tf.reshape(
@@ -151,6 +147,8 @@ class Model():
             #now outputs has shape [self.batch_size, 2]
             self.y_pred = outputs
 
+    def MDN_model(self):
+        """define mixture denisty network"""
     def Evaluating(self):
         with tf.name_scope("evaluating") as scope:
             self.loss = tf.nn.sparse_softmax_cross_entropy_with_logits(

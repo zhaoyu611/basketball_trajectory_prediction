@@ -1,0 +1,2 @@
+for bidir_LSTM model, the best test AUC is 0.888205128205 at 171 epoch, the model has 34434                     parameters
+for bidir_LSTM model, the best test AUC is 0.892708333333 at 256 epoch, the model has 34434                     parameters

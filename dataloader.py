@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 from itertools import groupby
-
+import tarfile
+import os
 # get the longest elements and its index
 
 
@@ -46,6 +47,10 @@ class DataLoad():
         self.iter_train = 0  # train iteration
         self.epochs = 0  # epochs for looping
         self.omit = 0  # omitted sequences number
+
+        if not os.path.exists(self.csv_loc):
+            with tarfile.open(direc+'seq_all.csv.tar.gz') as tar:
+                tar.extract(csv_file, path=direc)
 
 
     def munge_data(self, height=11.0, seq_len=10.0, dist=3.0, verbose=False):

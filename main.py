@@ -94,10 +94,10 @@ def main():
             print "========================================================"
             print "Finally, the best test AUC is {} at {} epoch,".format(best_AUC, best_AUC_ind)
             print "Finally, the model has {} parameters".format(numel)
-            # wirte result in local
+                        # wirte result in local
             with open('result.txt', 'a') as f:
-                f.write("the best test AUC is {} at {} epoch, \
-                         the model has {} parameters".format(best_AUC, best_AUC_ind, numel)
+                f.write("the best test AUC is {} at {} epoch, the model has {} \
+                    parameters".format(best_AUC, best_AUC_ind, numel))
         #========step 5: draw results===============
         plot=False
         if plot:

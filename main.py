@@ -3,7 +3,7 @@ import tensorflow as tf
 from dataloader import DataLoad
 import argparse
 from model import Model
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 import sklearn
 from sklearn import metrics
 
@@ -19,11 +19,11 @@ def load_arg():
                        help="distance from point to center")
     paser.add_argument("--hidden_size", type=int, default=64,
                        help="units num in each hidden layer")
-    paser.add_argument("--drop_out", type=float, default=0.9,
+    paser.add_argument("--drop_out", type=float, default=0.7,
                        help="drop out probability")
-    paser.add_argument('--learning_rate', type=float, default=0.01,
+    paser.add_argument('--learning_rate', type=float, default=0.005,
                        help="learning_rate")
-    paser.add_argument('--epoch', type=int, default=2,
+    paser.add_argument('--epoch', type=int, default=800,
                        help="epoch")
     paser.add_argument('--batch_size', type=int, default=64,
                        help="batch size")
@@ -50,9 +50,10 @@ def main():
     y_test = dl.data['y_test']
     #=======step 3: construct model==========
     model = Model(args)
-    model.bidir_LSTM_model()
+    model.LSTM_model()
     model.Evaluating()
     #=======step 4: start training===========
+
     train_cost_list = []
     test_cost_list = []
     test_AUC_list = []
@@ -70,27 +71,35 @@ def main():
             train_cost_list.append(train_cost)
             # print "at {} epoch, the train accuracy is {}, the train cost is
             # {}".format(i, train_acc, train_cost)
-
-            feed_dict = {model.X: X_test, model.y: y_test, model.drop_out: 1.0}
+            perm_ind = np.random.choice(
+                num_test, args.batch_size, replace=False)
+            feed_dict = {model.X: X_test[perm_ind], model.y: y_test[perm_ind], model.drop_out: 1.0}
             fetch = [model.accuracy, model.cost, model.y_pred, model.numel]
-            test_acc, test_cost, y_pred, numel = sess.run(fetch, feed_dict=feed_dict)
-            test_AUC = sklearn.metrics.roc_auc_score(y_test, y_pred[:, 1])
+            test_acc, test_cost, y_pred, numel = sess.run(
+                fetch, feed_dict=feed_dict)
+            test_AUC = sklearn.metrics.roc_auc_score(y_test[perm_ind], y_pred[:, 1])
+            print "at {} epoch, the training cost is {}, the training accuracy is {}".format(i, train_cost, train_acc)
+            print "at {} epoch, the test cost is {}, the test accuracy is {}".format(i, test_cost, test_acc)
             print "at {} epoch, the test AUC is {}".format(i, test_AUC)
+            print "------------------------------------------------------"
             test_AUC_list.append(test_AUC)
             test_cost_list.append(test_cost)
 
         best_AUC = max(test_AUC_list)
         best_AUC_ind = test_AUC_list.index(best_AUC)
+        print "========================================================"
         print "Finally, the best test AUC is {} at {} epoch,".format(best_AUC, best_AUC_ind)
         print "Finally, the model has {} parameters".format(numel)
-    #========step 5: draw results===============
-    plt.figure()
-    plt.plot(train_cost_list, 'r', label='train_cost')
-    plt.plot(test_cost_list, '--r', label='test_cost')
-    plt.legend()
-    plt.figure()
-    plt.plot(test_AUC_list, label='test_AUC')
-    plt.show()
+        #========step 5: draw results===============
+        plot = False
+        if plot:
+            plt.figure()
+            plt.plot(train_cost_list, 'r', label='train_cost')
+            plt.plot(test_cost_list, '--r', label='test_cost')
+            plt.legend()
+            plt.figure()
+            plt.plot(test_AUC_list, label='test_AUC')
+            plt.show()
 
 
 if __name__ == "__main__":

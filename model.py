@@ -15,16 +15,16 @@ class Model():
         self.batch_size = args.batch_size
 
         self.X = tf.placeholder(dtype=tf.float32, shape=[
-            None, self.seq_len, self.crd_num], name="input_data")
+            self.batch_size, self.seq_len, self.crd_num], name="input_data")
         self.y = tf.placeholder(dtype=tf.int64, shape=[
-                                None], name="ground_truth")
+                                self.batch_size], name="ground_truth")
         self.drop_out = tf.placeholder(dtype=tf.float32, name="drop_out")
         self.W_out = tf.Variable(tf.random_normal(
             [self.hidden_size, self.y_out_dim], stddev=0.01), name="W_out")
         self.b_out = tf.Variable(tf.constant(
             0.1, shape=[self.y_out_dim]), name="b_out")
 
-        # input_data is a [seq_len] length list, each has shape [None, crd_num]
+        # input_data is a [seq_len] length list, each has shape [self.batch_size, crd_num]
         self.input_data = tf.unpack(self.X, axis=1)
 
     def LSTM_model(self):
@@ -86,12 +86,12 @@ class Model():
 
             conv2 = conv2d(conv1, conv_W['wc2'], conv_b['bc2'])
             conv2 = maxpool2d(conv2)
-            # now the conv2 has shape [None, seq_len/k/k, 1, 1024]
+            # now the conv2 has shape [self.batch_size, seq_len/k/k, 1, 1024]
             conv_outputs = tf.squeeze(conv2, 2)
-            # now the conv2 has shape [None, seq_len/k/k, 1024]
+            # now the conv2 has shape [self.batch_size, seq_len/k/k, 1024]
             conv_outputs = tf.unpack(conv_outputs, axis=1)
             # now the conv_outputs is a seq_len/k/k length list,
-            # each has shape [None, 1024]
+            # each has shape [self.batch_size, 1024]
         # stack LSTM layers
         with tf.name_scope("LSTM") as scope:
             cell = tf.nn.rnn_cell.LSTMCell(self.hidden_size)
@@ -133,22 +133,22 @@ class Model():
                 return tf.nn.max_pool(X, ksize=[1, k, 1, 1], strides=[1, k, 1, 1], padding='SAME')
 
             conv1 = conv2d(conv_inputs, conv_W['wc1'], conv_b['bc1'])
-            # now conv1 has shape [None, seq_len, 1, 32]
+            # now conv1 has shape [self.batch_size, seq_len, 1, 32]
             conv1 = maxpool2d(conv1)
-            # now conv1 has shape [None, seq_len/k, 1, 32]
+            # now conv1 has shape [self.batch_size, seq_len/k, 1, 32]
 
             conv2 = conv2d(conv1, conv_W['wc2'], conv_b['bc2'])
-            # now conv2 has shape [None, seq_len/k, 1, 64]
+            # now conv2 has shape [self.batch_size, seq_len/k, 1, 64]
             conv2 = maxpool2d(conv2)
-            # now conv2 has shape [None, seq_len/k/k, 1, 64]
+            # now conv2 has shape [self.batch_size, seq_len/k/k, 1, 64]
             conv_outputs = tf.squeeze(conv2, 2)
-            # now conv_outputs has shape [None, seq_len/k/k, 64]
+            # now conv_outputs has shape [self.batch_size, seq_len/k/k, 64]
             outputs = tf.unpack(conv_outputs, axis=1)
-            #now outputs are a list of seq_len/k/k length, each has shape [None, 64] 
+            #now outputs are a list of seq_len/k/k length, each has shape [self.batch_size, 64] 
             outputs = outputs[-1]
-            #now outputs is the last in the list, has shape [None, 64]
+            #now outputs is the last in the list, has shape [self.batch_size, 64]
             outputs = tf.matmul(outputs, conv_W['wo']) + conv_b['bo']
-            #now outputs has shape [None, 2]
+            #now outputs has shape [self.batch_size, 2]
             self.y_pred = outputs
 
     def Evaluating(self):
@@ -167,11 +167,11 @@ class Model():
             #     learning_rate=self.learning_rate).minimize(self.cost)
             
             tvars = tf.trainable_variables()
-            grads,_ = tf.clip_by_global_norm(tf.gradients(self.cost, tvars), 10)
+            grads,_ = tf.clip_by_global_norm(tf.gradients(self.cost, tvars), 1)
             global_step = tf.Variable(0, trainable=False)
             lr = tf.train.exponential_decay(self.learning_rate, global_step, 14000, 0.95, staircase=True)
             optimizer = tf.train.AdamOptimizer(lr)
-            self.train_op = optimizer.apply_gradients(zip(grads, tvars))
+            self.train_op = optimizer.apply_gradients(zip(grads, tvars), global_step=global_step)
 
             self.correct_pred = tf.equal(tf.argmax(self.y_pred, 1), self.y)
             

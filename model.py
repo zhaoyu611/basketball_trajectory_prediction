@@ -114,9 +114,9 @@ class Model():
                 self.X, [-1, self.seq_len, 1, self.crd_num])
             conv_W = {
                 # 5x1 conv, crd_num inputs, 32 outputs
-                'wc1': tf.Variable(tf.random_normal([5, 1, self.crd_num, 32])),
+                'wc1': tf.Variable(tf.random_normal([1, 1, self.crd_num, 32])),
                 # 5x1 conv, 32 inputs, 64 outputs
-                'wc2': tf.Variable(tf.random_normal([5, 1, 32, 64])),
+                'wc2': tf.Variable(tf.random_normal([1, 1, 32, 64])),
                 'wo': tf.Variable(tf.random_normal([64, 2]))
             }
             conv_b = {

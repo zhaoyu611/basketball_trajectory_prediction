@@ -27,6 +27,8 @@ def load_arg():
                        help="epoch")
     paser.add_argument('--batch_size', type=int, default=64,
                        help="batch size")
+    paser.add_argument('--model_before_MDN', type='str', default='LSTM',
+                       help='the model before MDN, the input should be "LSTM" or "BLSTM"')
 
     args = paser.parse_args()
     return args
@@ -50,64 +52,65 @@ def main():
     y_test = dl.data['y_test']
     #=======step 3: construct model==========
     model = Model(args)
-    model.bidir_LSTM_model()
+    model.MDN_model('asff')
     model.Evaluating()
     #=======step 4: start training===========
 
     train_cost_list = []
     test_cost_list = []
     test_AUC_list = []
-    with tf.device("/gpu:0"):  # if you have GPU for accerlate, otherwise, set "/cpu:0"
-        with tf.Session() as sess:
-            sess.run(tf.initialize_all_variables())
-            for i in range(args.epoch):
-                for batch_num in range(num_train / args.batch_size):
-                    perm_ind = np.random.choice(
-                        num_train, args.batch_size, replace=False)
-                    feed_dict = {model.X: X_train[perm_ind], model.y: y_train[
-                        perm_ind], model.drop_out: args.drop_out}
-                    fetch = [model.train_op, model.accuracy, model.cost]
-                    _, train_acc, train_cost = sess.run(
-                        fetch, feed_dict=feed_dict)
-                #=======step 5: start testing============
-                train_cost_list.append(train_cost)
-                # print "at {} epoch, the train accuracy is {}, the train cost is
-                # {}".format(i, train_acc, train_cost)
+    with tf.Session() as sess:
+        sess.run(tf.initialize_all_variables())
+        for i in range(args.epoch):
+            for batch_num in range(num_train / args.batch_size):
                 perm_ind = np.random.choice(
-                    num_test, args.batch_size, replace=False)
-                feed_dict = {model.X: X_test[perm_ind], model.y: y_test[
-                    perm_ind], model.drop_out: 1.0}
-                fetch = [model.accuracy, model.cost, model.y_pred, model.numel]
-                test_acc, test_cost, y_pred, numel = sess.run(
+                    num_train, args.batch_size, replace=False)
+                feed_dict = {model.X: X_train[perm_ind], model.y: y_train[
+                    perm_ind], model.drop_out: args.drop_out}
+                fetch = [model.train_op, model.accuracy,
+                         model.cost, model.cost_seq]
+                _, train_acc, train_cost, train_cost_seq = sess.run(
                     fetch, feed_dict=feed_dict)
-                test_AUC = sklearn.metrics.roc_auc_score(
-                    y_test[perm_ind], y_pred[:, 1])
-                print "at {} epoch, the training cost is {}, the training accuracy is {}".format(i, train_cost, train_acc)
-                print "at {} epoch, the test cost is {}, the test accuracy is {}".format(i, test_cost, test_acc)
-                print "at {} epoch, the test AUC is {}".format(i, test_AUC)
-                print "------------------------------------------------------"
-                test_AUC_list.append(test_AUC)
-                test_cost_list.append(test_cost)
+            #=======step 5: start testing============
+            train_cost_list.append(train_cost)
+            # print "at {} epoch, the train accuracy is {}, the train cost is
+            # {}".format(i, train_acc, train_cost)
+            perm_ind = np.random.choice(
+                num_test, args.batch_size, replace=False)
+            feed_dict = {model.X: X_test[perm_ind], model.y: y_test[
+                perm_ind], model.drop_out: 1.0}
+            fetch = [model.accuracy, model.cost, model.y_pred, model.numel]
+            test_acc, test_cost, y_pred, numel = sess.run(
+                fetch, feed_dict=feed_dict)
+            test_AUC = sklearn.metrics.roc_auc_score(
+                y_test[perm_ind], y_pred[:, 1])
+            print "at {} epoch, the training cost is {}, the training accuracy is {}".format(i, train_cost, train_acc)
+            print "at {} epoch, the test cost is {}, the test accuracy is {}".format(i, test_cost, test_acc)
+            print "at {} epoch, the test AUC is {}".format(i, test_AUC)
+            print "at {} epoch, the cost is {}, the cost_seq is {}".format(i, train_cost, train_cost_seq)
+            print "------------------------------------------------------"
+            test_AUC_list.append(test_AUC)
+            test_cost_list.append(test_cost)
 
-            best_AUC = max(test_AUC_list)
-            best_AUC_ind = test_AUC_list.index(best_AUC)
-            print "========================================================"
-            print "Finally, the best test AUC is {} at {} epoch,".format(best_AUC, best_AUC_ind)
-            print "Finally, the model has {} parameters".format(numel)
-                        # wirte result in local
-            with open('result.txt', 'a') as f:
-                f.write("the best test AUC is {} at {} epoch, the model has {} \
-                    parameters".format(best_AUC, best_AUC_ind, numel))
-        #========step 5: draw results===============
-        plot=False
-        if plot:
-            plt.figure()
-            plt.plot(train_cost_list, 'r', label='train_cost')
-            plt.plot(test_cost_list, '--r', label='test_cost')
-            plt.legend()
-            plt.figure()
-            plt.plot(test_AUC_list, label='test_AUC')
-            plt.show()
+        best_AUC = max(test_AUC_list)
+        best_AUC_ind = test_AUC_list.index(best_AUC)
+        print "========================================================"
+        print "Finally, the best test AUC is {} at {} epoch,".format(best_AUC, best_AUC_ind)
+        print "Finally, the model has {} parameters".format(numel)
+        # wirte result in local
+        with open('result.txt', 'a') as f:
+            f.write("the best test AUC is {} at {} epoch, the model has {} \
+                parameters".format(best_AUC, best_AUC_ind, numel))
+    #========step 5: draw results===============
+    plot = False
+    if plot:
+        plt.figure()
+        plt.plot(train_cost_list, 'r', label='train_cost')
+        plt.plot(test_cost_list, '--r', label='test_cost')
+        plt.legend()
+        plt.figure()
+        plt.plot(test_AUC_list, label='test_AUC')
+        plt.show()
 
 
 if __name__ == "__main__":

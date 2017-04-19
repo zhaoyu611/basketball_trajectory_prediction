@@ -27,7 +27,7 @@ def load_arg():
                        help="epoch")
     paser.add_argument('--batch_size', type=int, default=64,
                        help="batch size")
-    paser.add_argument('--model_before_MDN', type='str', default='LSTM',
+    paser.add_argument('--model_before_MDN', type=str, default='LSTM',
                        help='the model before MDN, the input should be "LSTM" or "BLSTM"')
 
     args = paser.parse_args()
@@ -52,7 +52,9 @@ def main():
     y_test = dl.data['y_test']
     #=======step 3: construct model==========
     model = Model(args)
-    model.MDN_model('asff')
+    #Now we construct model, there are LSTM_model, bidir_LSTM_model, 
+    #CNN_model, Conv_LSTM_model, LSTM_MDN_model can be chosen.
+    model.CNN_model()
     model.Evaluating()
     #=======step 4: start training===========
 
@@ -68,8 +70,8 @@ def main():
                 feed_dict = {model.X: X_train[perm_ind], model.y: y_train[
                     perm_ind], model.drop_out: args.drop_out}
                 fetch = [model.train_op, model.accuracy,
-                         model.cost, model.cost_seq]
-                _, train_acc, train_cost, train_cost_seq = sess.run(
+                         model.cost]
+                _, train_acc, train_cost = sess.run(
                     fetch, feed_dict=feed_dict)
             #=======step 5: start testing============
             train_cost_list.append(train_cost)
@@ -87,7 +89,6 @@ def main():
             print "at {} epoch, the training cost is {}, the training accuracy is {}".format(i, train_cost, train_acc)
             print "at {} epoch, the test cost is {}, the test accuracy is {}".format(i, test_cost, test_acc)
             print "at {} epoch, the test AUC is {}".format(i, test_AUC)
-            print "at {} epoch, the cost is {}, the cost_seq is {}".format(i, train_cost, train_cost_seq)
             print "------------------------------------------------------"
             test_AUC_list.append(test_AUC)
             test_cost_list.append(test_cost)

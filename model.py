@@ -16,7 +16,7 @@ class Model():
         # two for distribution over hit&miss, params for distribution
         # parameters
         self.mixtures = 3  # num of mixture denesity netowrks
-        self.use_MDN = False # if use MDN model
+        self.use_MDN = False  # if use MDN model
 
         self.X = tf.placeholder(dtype=tf.float32, shape=[
             self.batch_size, self.seq_len, self.crd_num], name="input_data")
@@ -64,6 +64,7 @@ class Model():
             # outputs is a list of seq_len length, each has shape [batch_size,
             # hidden_size]
             self.y_pred = tf.matmul(outputs[-1], self.W_out) + self.b_out
+            return outputs
 
     def CNN_model(self):
         """Here we have 2 Conv layers, followed by LSTM layers
@@ -164,64 +165,70 @@ class Model():
         """ define mixture denisty network
             argument: 
                 LSTM_type: [str] use 'LSTM' or  'BLSTM' before the MDN 
-        """        
+        """
         self.use_MDN = True
         if LSTM_type == 'LSTM':
             outputs = self.LSTM_model()
         elif LSTM_type == 'BLSTM':
             outputs = self.bidir_LSTM_model()
-        else: 
+        else:
             raise "You should specify the right model before run MDN"
-        # outputs is a list of seq_len length, each has shape [batch_size,
-        # hidden_size]
-        with tf.name_scope('Output_MDN') as scope:
-            params = 8  # mu and sigma for 3 X, Y, Z, coefficient of X and Y,  and hit&miss
+        
+        with tf.name_scope("Output_MDN") as scope:
+            params = 8  # 7+theta
+            # Two for distribution over hit&miss, params for distribution
+            # parameters
             output_units = self.mixtures * params
             W_o = tf.Variable(tf.random_normal(
                 [self.hidden_size, output_units], stddev=0.01))
             b_o = tf.Variable(tf.constant(0.5, shape=[output_units]))
-            # for comparison with XYZ, only up to the last time_step
-            # because for the final time_step you cannot make a prediction
+            # For comparison with XYZ, only up to last time_step
+            # --> because for final time_step you cannot make a prediction
             outputs_tensor = tf.concat(0, outputs[:-1])
-            # outputs_tensor has shape [bat_size*(seq_len-1), hidden_size]
+            # is of size [batch_size*seq_len by output_units]
             h_out_tensor = tf.nn.xw_plus_b(outputs_tensor, W_o, b_o)
-            # h_out_tensor has shape [bat_size*(seq_len-1), output_units]
 
         with tf.name_scope('MDN_over_next_vector') as scope:
-            h_xyz = tf.reshape(
-                h_out_tensor, (self.batch_size, self.seq_len - 1, output_units))
-            x_next = tf.sub(self.X[:, 1:, :3], self.X[:, :-1, :3])
-            xn1, xn2, xn3 = tf.split(2, 3, x_next)
+            # Next two lines are rather ugly, But its the most efficient way to
+            # reshape the data
+            h_xyz = tf.reshape(h_out_tensor, (self.seq_len - 1, self.batch_size, output_units))
+            # transpose to [batch_size, output_units, sl-1]
+            h_xyz = tf.transpose(h_xyz, [1, 2, 0])
+            # x_next = tf.slice(x,[0,0,1],[batch_size,3,sl-1])  #in size [batch_size,
+            # output_units, sl-1]
+            MDN_X = tf.transpose(self.X, [0, 2, 1])
+            x_next = tf.sub(MDN_X[:, :3, 1:], MDN_X[:, :3, :self.seq_len - 1])
+            # From here any, many variables have size [batch_size, mixtures, sl-1]
+            xn1, xn2, xn3 = tf.split(1, 3, x_next)
             self.mu1, self.mu2, self.mu3, self.s1, self.s2, self.s3, self.rho, self.theta = tf.split(
-                2, params, h_xyz)
-            #each param has shape [batch_size, seq_len-1, mixtures]. here to be [64, 11, 3]
+                1, params, h_xyz)
 
-            # softmax all the thata's
-            max_theta = tf.reduce_max(self.theta, 2, keep_dims=True)
+            # make the theta mixtures
+            # softmax all the theta's:
+            max_theta = tf.reduce_max(self.theta, 1, keep_dims=True)
             self.theta = tf.sub(self.theta, max_theta)
             self.theta = tf.exp(self.theta)
-            normalized_theta = tf.inv(tf.reduce_sum(self.theta))
-            self.theta = tf.mul(self.theta, normalized_theta)
+            normalize_theta = tf.inv(tf.reduce_sum(self.theta, 1, keep_dims=True))
+            self.theta = tf.mul(normalize_theta, self.theta)
 
-            #deviances are non-negtive and rho between -1 and 1
+            # Deviances are non-negative and tho between -1 and 1
             self.s1 = tf.exp(self.s1)
             self.s2 = tf.exp(self.s2)
             self.s3 = tf.exp(self.s3)
             self.rho = tf.tanh(self.rho)
 
-            px1x2 = tf_2d_normal(xn1, xn2, self.mu1, self.mu2, self.s1, self.s2, self.rho)
-            px3 =tf_1d_normal(xn3, self.mu3, self.s3)
+            # probability in x1x2 plane
+            px1x2 = tf_2d_normal(xn1, xn2, self.mu1, self.mu2,
+                                 self.s1, self.s2, self.rho)
+            px3 = tf_1d_normal(xn3, self.mu3, self.s3)
             px1x2x3 = tf.mul(px1x2, px3)
 
-            px1x2x3_mixed = tf.reduce_sum(tf.mul(px1x2x3, self.theta), 2)
-            print "You are using {} mixtures".format(self.mixtures)
-
-            #at the beginning, the px1x2x3_mixed may be 0
+            # Sum along the mixtures in dimension 1
+            px1x2x3_mixed = tf.reduce_sum(tf.mul(px1x2x3, self.theta), 1)
+            print('You are using %.0f mixtures' % self.mixtures)
+            # at the beginning, some errors are exactly zero.
             loss_seq = -tf.log(tf.maximum(px1x2x3_mixed, 1e-20))
             self.cost_seq = tf.reduce_mean(loss_seq)
-
-
-
 
 
     def Evaluating(self):
@@ -230,7 +237,7 @@ class Model():
                 self.y_pred, self.y)
             self.cost = tf.reduce_mean(self.loss)
 
-            if self.use_MDN: #if use MDN, then add cost_seq to cost
+            if self.use_MDN:  # if use MDN, then add cost_seq to cost
                 self.cost += self.cost_seq
 
             # global_step = tf.Variable(0, trainable=False)

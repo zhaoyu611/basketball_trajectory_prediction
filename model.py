@@ -122,13 +122,15 @@ class Model():
                 self.X, [-1, self.seq_len, 1, self.crd_num])
             conv_W = {
                 # 5x1 conv, crd_num inputs, 32 outputs
-                'wc1': tf.Variable(tf.random_normal([5, 1, self.crd_num, 32])),
-                # 5x1 conv, 32 inputs, 1024 outputs
-                'wc2': tf.Variable(tf.random_normal([5, 1, 32, 1024]))
+                'wc1': tf.Variable(tf.random_normal([1, 1, self.crd_num, 32])),
+                # 5x1 conv, 32 inputs, 64 outputs
+                'wc2': tf.Variable(tf.random_normal([1, 1, 32, 64])),
+                'wo': tf.Variable(tf.random_normal([64, 2]))
             }
             conv_b = {
                 'bc1': tf.Variable(tf.random_normal([32])),
-                'bc2': tf.Variable(tf.random_normal([1024]))
+                'bc2': tf.Variable(tf.random_normal([64])),
+                'bo': tf.Variable(tf.random_normal([2]))
             }
             def conv2d(X, W, b, stride=1):
                 X = tf.nn.conv2d(X, W, [1, stride, stride, 1], padding='SAME')
@@ -139,16 +141,20 @@ class Model():
                 return tf.nn.max_pool(X, ksize=[1, k, 1, 1], strides=[1, k, 1, 1], padding='SAME')
 
             conv1 = conv2d(conv_inputs, conv_W['wc1'], conv_b['bc1'])
+            # now conv1 has shape [self.batch_size, seq_len, 1, 32]
             conv1 = maxpool2d(conv1)
+            # now conv1 has shape [self.batch_size, seq_len/k, 1, 32]
 
             conv2 = conv2d(conv1, conv_W['wc2'], conv_b['bc2'])
+            # now conv2 has shape [self.batch_size, seq_len/k, 1, 64]
             conv2 = maxpool2d(conv2)
-            # now the conv2 has shape [self.batch_size, seq_len/k/k, 1, 1024]
+            # now conv2 has shape [self.batch_size, seq_len/k/k, 1, 64]
             conv_outputs = tf.squeeze(conv2, 2)
-            # now the conv2 has shape [self.batch_size, seq_len/k/k, 1024]
-            conv_outputs = tf.unpack(conv_outputs, axis=1)
-            # now the conv_outputs is a seq_len/k/k length list,
-            # each has shape [self.batch_size, 1024]
+            # now conv_outputs has shape [self.batch_size, seq_len/k/k, 64]
+            conv_outputs_list = tf.unpack(conv_outputs, axis=1)
+            # now outputs are a list of seq_len/k/k length, each has shape
+            # [self.batch_size, 64]
+
         # stack LSTM layers
         with tf.name_scope("LSTM") as scope:
             cell = tf.nn.rnn_cell.LSTMCell(self.hidden_size)
@@ -157,8 +163,8 @@ class Model():
 
             cell = tf.nn.rnn_cell.DropoutWrapper(
                 cell, output_keep_prob=self.drop_out)
-            outputs, _ = tf.nn.rnn(cell, conv_outputs, dtype=tf.float32)
-
+            outputs, _ = tf.nn.rnn(cell, conv_outputs_list, dtype=tf.float32)
+            print outputs
             self.y_pred = tf.matmul(outputs[-1], self.W_out) + self.b_out
 
     def MDN_model(self, LSTM_type='LSTM'):

@@ -54,7 +54,7 @@ def main():
     model = Model(args)
     #Now we construct model, there are LSTM_model, bidir_LSTM_model, 
     #CNN_model, Conv_LSTM_model, LSTM_MDN_model can be chosen.
-    model.CNN_model()
+    model.Conv_LSTM_model()
     model.Evaluating()
     #=======step 4: start training===========
 

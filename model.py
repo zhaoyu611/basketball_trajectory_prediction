@@ -272,3 +272,11 @@ class Model():
             # calculate training parameters number
 
             self.numel = tf.reduce_sum([tf.size(var) for var in tvars])
+
+
+
+
+
+
+
+

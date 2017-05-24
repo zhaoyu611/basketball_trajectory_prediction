@@ -4,7 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.stats import multivariate_normal
 
 
-def plot_traj_MDN_mult(model, sess, val_dict, batch, sl_plot=5, ind=-1):
+def plot_traj_MDN_mult(model, sess, val_dict, batch, sl_plot=8, ind=-1):
   """Plots the trajectory. At given time-stamp, it plots the probability distributions
   of where the next point will be
   THIS IS FOR MULTIPLE MIXTURES
@@ -92,18 +92,96 @@ def plot_traj_MDN_mult(model, sess, val_dict, batch, sl_plot=5, ind=-1):
   trajectory_num = 2
   start_point = np.array([batch[ind, 0, sl_plot], batch[
       ind, 1, sl_plot], batch[ind, 2, sl_plot]])
+  offset_x_matrix = np.zeros(
+      [seq_len - sl_plot, trajectory_num**(seq_len - sl_plot)])
+  offset_y_matrix = np.zeros(
+      [seq_len - sl_plot, trajectory_num**(seq_len - sl_plot)])
+  offset_z_matrix = np.zeros(
+      [seq_len - sl_plot, trajectory_num**(seq_len - sl_plot)])
 
-  for sl in range(sl_plot, seq_len - 1):
-    _, offset = cal_next_point_pdf(result, ind, sl, [x1, x2, x3])
-    start_point = start_point + offset
-    point_list.append(start_point)
-  print point_list
-  point_array = np.stack(point_list, axis=1)
+  for sl in range(seq_len - sl_plot):
+    # for each index, generate how much points
+    point_num = trajectory_num**(sl + 1)
+    interval = trajectory_num**(seq_len - sl_plot) / point_num
+
+    for num in range(point_num):
+      _, offset = cal_next_point_pdf(
+          result, ind, sl - 1 + sl_plot, [x1, x2, x3])
+      offset_x_matrix[sl, num * interval:(num + 1) * interval] = offset[0]
+      offset_y_matrix[sl, num * interval:(num + 1) * interval] = offset[1]
+      offset_z_matrix[sl, num * interval:(num + 1) * interval] = offset[2]
+
+  # cumsum the offset, offset_x has shape (seq_len-sl_plot,
+  # trajectory_num**(seq_len-sl_plot))
+  offset_x = np.cumsum(offset_x_matrix, axis=0)
+  offset_y = np.cumsum(offset_y_matrix, axis=0)
+  offset_z = np.cumsum(offset_z_matrix, axis=0)
+
+  start_x = np.array([batch[ind, 0, sl_plot]] *
+                     (trajectory_num**(seq_len - sl_plot)))
+  start_y = np.array([batch[ind, 1, sl_plot]] *
+                     (trajectory_num**(seq_len - sl_plot)))
+  start_z = np.array([batch[ind, 2, sl_plot]] *
+                     (trajectory_num**(seq_len - sl_plot)))
+
+  x_val = np.row_stack((start_x, start_x + offset_x))
+  y_val = np.row_stack((start_y, start_y + offset_y))
+  z_val = np.row_stack((start_z, start_z + offset_z))
 
   fig = plt.figure()
-  ax = fig.add_subplot(111, projection='3d')
-  ax.plot(point_array[0, :], point_array[1, :], point_array[2, :], 'r')
+
+  ax = fig.add_subplot(221, projection='3d')
+  # plot the real trajectory
   ax.plot(batch[ind, 0, :], batch[ind, 1, :], batch[ind, 2, :], 'b')
+  # plot the real point
+  ax.scatter(batch[ind, 0, :], batch[ind, 1, :], batch[ind, 2, :])
+  # plot the generated trajectory
+  for i in range(trajectory_num**(seq_len - sl_plot)):
+    ax.plot(x_val[:, i], y_val[:, i], z_val[:, i], 'r')
+  ax.set_title('generate trjectory in 3D ')
+  ax.set_xlabel('x coordinate')
+  ax.set_ylabel('y coordinate')
+  ax.set_zlabel('z coordinate')
+
+  ax = fig.add_subplot(222)  # plot the X-Y plane
+  # plot the real trajectory
+  ax.plot(batch[ind, 0, :], batch[ind, 1, :], 'b')
+  # plot the real point
+  ax.scatter(batch[ind, 0, :], batch[ind, 1, :])
+  # plot the generated trajectory
+  for i in range(trajectory_num**(seq_len - sl_plot)):
+    ax.plot(x_val[:, i], y_val[:, i], 'r')
+  ax.set_title('view in X-Y plane')
+  ax.set_xlabel('x coordinate')
+  ax.set_ylabel('y coordinate')
+  ax.grid()
+  
+
+  ax = fig.add_subplot(223)  # plot the X-Z plane
+  # plot the real trajectory
+  ax.plot(batch[ind, 0, :], batch[ind, 2, :], 'b')
+  # plot the real point
+  ax.scatter(batch[ind, 0, :], batch[ind, 2, :])
+  # plot the generated trajectory
+  for i in range(trajectory_num**(seq_len - sl_plot)):
+    ax.plot(x_val[:, i], z_val[:, i], 'r')
+  ax.set_title('view in X-Z plane')
+  ax.set_xlabel('x coordinate')
+  ax.set_ylabel('z coordinate')
+  ax.grid()
+
+  ax = fig.add_subplot(224)  # plot the Y-Z plane
+  # plot the real trajectory
+  ax.plot(batch[ind, 1, :], batch[ind, 2, :], 'b')
+  # plot the real point
+  ax.scatter(batch[ind, 1, :], batch[ind, 2, :])
+  # plot the generated trajectory
+  for i in range(trajectory_num**(seq_len - sl_plot)):
+    ax.plot(y_val[:, i], z_val[:, i], 'r')
+  ax.set_title('view in Y-Z plane')
+  ax.set_xlabel('y coordinate')
+  ax.set_ylabel('z coordinate')
+  ax.grid()
 
 
 def cal_next_point_pdf(result, ind, sl_plot, crd_bound):
@@ -127,6 +205,7 @@ def cal_next_point_pdf(result, ind, sl_plot, crd_bound):
   mixtures = result[0].shape[1]
   for m in range(mixtures):
     mean = np.zeros((3))
+
     mean[0] = result[0][ind, m, sl_plot]
     mean[1] = result[1][ind, m, sl_plot]
     mean[2] = result[2][ind, m, sl_plot]
@@ -140,8 +219,11 @@ def cal_next_point_pdf(result, ind, sl_plot, crd_bound):
     cov[2, 2] = np.square(sigma3)
     cov[1, 2] = sigma12
     cov[2, 1] = sigma12
+    # add a small positive number to ensure the cov is semipositive
+    cov = cov + np.finfo(float).eps
     rv = multivariate_normal(mean, cov)
-    point_offset = np.random.multivariate_normal(mean, cov)
+    # point_offset = np.random.multivariate_normal(mean, cov)
+    point_offset = multivariate_normal.rvs(mean, cov)
     P = rv.pdf(XX)  # P is now in [x1,x2,x3]
     PP.append(P)
     point_offset_list.append(point_offset)
@@ -173,36 +255,3 @@ def cal_next_point_pdf(result, ind, sl_plot, crd_bound):
   offset[2] = get_bound(x3, offset[2])
 
   return pdf, offset
-
-
-def draw_multi_traj(start_point, offset, trajectory_num=3):
-  """generate multiply trajectories and draw them
-    args:
-      point: [list] the x, y, z value of this point
-      pdf: [ndarray] the probility distribution of x, y, z coordinates next point,
-                      shape is [x1, x2, x3]
-      trajectory_num: [int] generate trajectory num for each point
-
-    return:
-  """
-
-  # x_val, y_val, z_val = point  # the x y z value the this point
-
-  # def cal_next_point(point, pdf):
-  #   """ calculate next point when given current point and pdf\
-  #       args:
-  #         point: [list] the x, y, z value of this point
-  #         pdf:   [ndarray] the probility distribution of next point,
-  #                           whose shape is [x1, x2, x3]
-  #       return:
-  #         next_point: [list] the x, y, z value of next point
-  #   """
-  #   # for i in range(len(point)):
-  #   #   N = pdf.shape[i]
-  #   #   accumulate = 0
-  #   #   for j in range(N):
-  #   #     accumulate+ = pdf
-
-  # cal_next_point(point, pdf)
-  next_point = start_point + offset
-  return next_point

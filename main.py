@@ -3,14 +3,14 @@ import tensorflow as tf
 from dataloader import DataLoad
 import argparse
 from model import Model
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+# import matplotlib.pyplot as plt
+# from mpl_toolkits.mplot3d import Axes3D
 import sklearn
 from sklearn import metrics
 
 from sample import *
 import hyperopt as hp
-from hyperopt import fmin,tpe,hp,partial
+from hyperopt import fmin, tpe, hp, partial
 
 
 def load_arg():
@@ -28,7 +28,7 @@ def load_arg():
                      help="drop out probability")
   paser.add_argument('--learning_rate', type=float, default=0.005,
                      help="learning_rate")
-  paser.add_argument('--epoch', type=int, default=200,
+  paser.add_argument('--epoch', type=int, default=2,
                      help="epoch")
   paser.add_argument('--batch_size', type=int, default=64,
                      help="batch size")
@@ -44,11 +44,10 @@ def load_arg():
 def main(params):
   #=======step 1: get args for model=======
   args = load_arg()
-    
   args.learning_rate = params["lr_rate"]
   args.drop_out = params["dp_out"]
   args.batch_size = params["bt_size"]
-
+  print "learning_rate is {}, drop_out is {}, batch_size is {}".format(params["lr_rate"], params["dp_out"], params["bt_size"])
   #=======step 2: preprocess data==========
   direc = './data/'  # directory of data file
   csv_file = 'seq_all.csv'
@@ -63,6 +62,7 @@ def main(params):
   X_test = dl.data['X_test']
   y_test = dl.data['y_test']
   #=======step 3: construct model==========
+  tf.reset_default_graph()
   model = Model(args)
   if args.model_type == 'LSTM_model':
     model.LSTM_model()
@@ -118,10 +118,10 @@ def main(params):
       test_cost_list.append(test_cost)
 
       #----early stop---------
-      #if test_AUC start to decrease, then stop caculating
+      # if test_AUC start to decrease, then stop caculating
       if i > 10:
         mean_test_AUC = np.mean(test_AUC_list[-10:])
-        if test_AUC<mean_test_AUC*0.8:
+        if test_AUC < mean_test_AUC * 0.8:
           break
 
     best_AUC = max(test_AUC_list)
@@ -145,19 +145,18 @@ def main(params):
 
         plot_traj_MDN_mult(model, sess, val_dict, batch)
 
-    plt.figure()
-    plt.plot(train_cost_list, 'r', label='train_cost')
-    plt.plot(test_cost_list, '--r', label='test_cost')
-    plt.legend()
-    plt.figure()
-    plt.plot(test_AUC_list, label='test_AUC')
-    plt.show()
+      plt.figure()
+      plt.plot(train_cost_list, 'r', label='train_cost')
+      plt.plot(test_cost_list, '--r', label='test_cost')
+      plt.legend()
+      plt.figure()
+      plt.plot(test_AUC_list, label='test_AUC')
+      plt.show()
 
   return -best_AUC
 
 # def test(args):
 #   return params["dropt_out"]
-
 
 
 # if __name__ == "__main__":
@@ -168,13 +167,16 @@ def main(params):
 #   print percept(best)
 
 
-from hyperopt import fmin,tpe,hp,partial
+from hyperopt import fmin, tpe, hp, partial
 
-space = {"lr_rate":hp.uniform("lr_rate",0.0001,0.1),
-         "dp_out": hp.uniform("dp_out",0.2, 0.8),
-         "bt_size": hp.randint("bt_size",128)}
-algo = partial(tpe.suggest,n_startup_jobs=10)
-best = fmin(main,space,algo = algo,max_evals=100)
+space = {"lr_rate": hp.uniform("lr_rate", 0.0001, 0.1),
+         "dp_out": hp.uniform("dp_out", 0.2, 0.8),
+         "bt_size": hp.randint("bt_size", 128)}
+algo = partial(tpe.suggest, n_startup_jobs=10)
+best = fmin(main, space, algo=algo)
 print best
-print percept(best)
+print main(best)
 
+with open('finetune.txt', 'a') as f:
+  f.write("the best AUC is {}, its lr_rate is {}, drop_out is {}, \
+    batch_size is {}".format(main(best), best["lr_rate"], best["dp_out"], est["bt_size"]))

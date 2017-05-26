@@ -219,8 +219,8 @@ def cal_next_point_pdf(result, ind, sl_plot, crd_bound):
     cov[2, 2] = np.square(sigma3)
     cov[1, 2] = sigma12
     cov[2, 1] = sigma12
-    # add a small positive number to ensure the cov is semipositive
-    cov = cov + np.finfo(float).eps
+
+   
     rv = multivariate_normal(mean, cov)
     # point_offset = np.random.multivariate_normal(mean, cov)
     point_offset = multivariate_normal.rvs(mean, cov)

@@ -9,6 +9,8 @@ import sklearn
 from sklearn import metrics
 
 from sample import *
+import hyperopt as hp
+from hyperopt import fmin,tpe,hp,partial
 
 
 def load_arg():
@@ -26,7 +28,7 @@ def load_arg():
                      help="drop out probability")
   paser.add_argument('--learning_rate', type=float, default=0.005,
                      help="learning_rate")
-  paser.add_argument('--epoch', type=int, default=1,
+  paser.add_argument('--epoch', type=int, default=200,
                      help="epoch")
   paser.add_argument('--batch_size', type=int, default=64,
                      help="batch size")
@@ -39,11 +41,14 @@ def load_arg():
   return args
 
 
-
-
-def main():
+def main(params):
   #=======step 1: get args for model=======
   args = load_arg()
+    
+  args.learning_rate = params["lr_rate"]
+  args.drop_out = params["dp_out"]
+  args.batch_size = params["bt_size"]
+
   #=======step 2: preprocess data==========
   direc = './data/'  # directory of data file
   csv_file = 'seq_all.csv'
@@ -112,6 +117,13 @@ def main():
       test_AUC_list.append(test_AUC)
       test_cost_list.append(test_cost)
 
+      #----early stop---------
+      #if test_AUC start to decrease, then stop caculating
+      if i > 10:
+        mean_test_AUC = np.mean(test_AUC_list[-10:])
+        if test_AUC<mean_test_AUC*0.8:
+          break
+
     best_AUC = max(test_AUC_list)
     best_AUC_ind = test_AUC_list.index(best_AUC)
     print "========================================================"
@@ -123,8 +135,8 @@ def main():
                 parameters".format(best_AUC, best_AUC_ind, numel))
 
     #========step 5: draw results===============
-    plot = True
-    if plot:
+    generate_trajectory = False
+    if generate_trajectory:
       if args.model_type == 'LSTM_MDN_model' or 'BLSTM_MDN_model':
 
         val_dict = {model.X: X_test[perm_ind], model.y: y_test[
@@ -133,14 +145,36 @@ def main():
 
         plot_traj_MDN_mult(model, sess, val_dict, batch)
 
-      plt.figure()
-      plt.plot(train_cost_list, 'r', label='train_cost')
-      plt.plot(test_cost_list, '--r', label='test_cost')
-      plt.legend()
-      plt.figure()
-      plt.plot(test_AUC_list, label='test_AUC')
-      plt.show()
+    plt.figure()
+    plt.plot(train_cost_list, 'r', label='train_cost')
+    plt.plot(test_cost_list, '--r', label='test_cost')
+    plt.legend()
+    plt.figure()
+    plt.plot(test_AUC_list, label='test_AUC')
+    plt.show()
+
+  return -best_AUC
+
+# def test(args):
+#   return params["dropt_out"]
 
 
-if __name__ == "__main__":
-  main()
+
+# if __name__ == "__main__":
+#   space = {"drop_out": hp.uniform("drop_out",0.1, 0.9)}
+#   algo = partial(tpe.suggest,n_startup_jobs=10)
+#   best = fmin(test, space, algo=algo, max_evals=0)
+#   print best
+#   print percept(best)
+
+
+from hyperopt import fmin,tpe,hp,partial
+
+space = {"lr_rate":hp.uniform("lr_rate",0.0001,0.1),
+         "dp_out": hp.uniform("dp_out",0.2, 0.8),
+         "bt_size": hp.randint("bt_size",128)}
+algo = partial(tpe.suggest,n_startup_jobs=10)
+best = fmin(main,space,algo = algo,max_evals=100)
+print best
+print percept(best)
+

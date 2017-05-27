@@ -171,9 +171,9 @@ from hyperopt import fmin, tpe, hp, partial
 
 space = {"lr_rate": hp.uniform("lr_rate", 0.0001, 0.1),
          "dp_out": hp.uniform("dp_out", 0.2, 0.8),
-         "bt_size": hp.randint("bt_size", 128)}
-algo = partial(tpe.suggest, n_startup_jobs=10)
-best = fmin(main, space, algo=algo)
+         "bt_size": hp.choice("bt_size", [32,64,128])}
+# algo = partial(tpe.suggest, n_startup_jobs=10)
+best = fmin(main, space, algo=tpe.suggest, max_evals=100)
 print best
 print main(best)
 

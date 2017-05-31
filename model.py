@@ -53,13 +53,13 @@ class Model():
             cell = tf.nn.rnn_cell.LSTMCell(self.hidden_size / 2)
             cells_fw = [cell] * self.hidden_layers
             cells_bw = [cell] * self.hidden_layers
-
             pre_layer = self.input_data
             for i, (cell_fw, cell_bw) in enumerate(zip(cells_fw, cells_bw)):
                 with vs.variable_scope("cell{}".format(i)) as cell_scope:
                     pre_layer, _, _ = tf.nn.bidirectional_rnn(
                         cell_fw, cell_bw, pre_layer, dtype=tf.float32)
             outputs = pre_layer
+
             outputs[-1] = tf.nn.dropout(outputs[-1], self.drop_out)
             # outputs is a list of seq_len length, each has shape [batch_size,
             # hidden_size]
@@ -179,7 +179,7 @@ class Model():
             outputs = self.bidir_LSTM_model()
         else:
             raise "You should specify the right model before run MDN"
-        
+
         with tf.name_scope("Output_MDN") as scope:
             params = 8  # 7+theta
             # Two for distribution over hit&miss, params for distribution
@@ -197,14 +197,16 @@ class Model():
         with tf.name_scope('MDN_over_next_vector') as scope:
             # Next two lines are rather ugly, But its the most efficient way to
             # reshape the data
-            h_xyz = tf.reshape(h_out_tensor, (self.seq_len - 1, self.batch_size, output_units))
+            h_xyz = tf.reshape(
+                h_out_tensor, (self.seq_len - 1, self.batch_size, output_units))
             # transpose to [batch_size, output_units, sl-1]
             h_xyz = tf.transpose(h_xyz, [1, 2, 0])
             # x_next = tf.slice(x,[0,0,1],[batch_size,3,sl-1])  #in size [batch_size,
             # output_units, sl-1]
             MDN_X = tf.transpose(self.X, [0, 2, 1])
             x_next = tf.sub(MDN_X[:, :3, 1:], MDN_X[:, :3, :self.seq_len - 1])
-            # From here any, many variables have size [batch_size, mixtures, sl-1]
+            # From here any, many variables have size [batch_size, mixtures,
+            # sl-1]
             xn1, xn2, xn3 = tf.split(1, 3, x_next)
             self.mu1, self.mu2, self.mu3, self.s1, self.s2, self.s3, self.rho, self.theta = tf.split(
                 1, params, h_xyz)
@@ -214,7 +216,8 @@ class Model():
             max_theta = tf.reduce_max(self.theta, 1, keep_dims=True)
             self.theta = tf.sub(self.theta, max_theta)
             self.theta = tf.exp(self.theta)
-            normalize_theta = tf.inv(tf.reduce_sum(self.theta, 1, keep_dims=True))
+            normalize_theta = tf.inv(
+                tf.reduce_sum(self.theta, 1, keep_dims=True))
             self.theta = tf.mul(normalize_theta, self.theta)
 
             # Deviances are non-negative and tho between -1 and 1
@@ -236,11 +239,10 @@ class Model():
             loss_seq = -tf.log(tf.maximum(px1x2x3_mixed, 1e-20))
             self.cost_seq = tf.reduce_mean(loss_seq)
 
-
     def Evaluating(self):
         with tf.name_scope("evaluating") as scope:
             self.loss = tf.nn.sparse_softmax_cross_entropy_with_logits(
-                self.y_pred, self.y)
+                logits=self.y_pred, labels=self.y)
             self.cost = tf.reduce_mean(self.loss)
 
             if self.use_MDN:  # if use MDN, then add cost_seq to cost
@@ -272,11 +274,3 @@ class Model():
             # calculate training parameters number
 
             self.numel = tf.reduce_sum([tf.size(var) for var in tvars])
-
-
-
-
-
-
-
-

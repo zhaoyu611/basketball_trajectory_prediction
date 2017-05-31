@@ -20,7 +20,7 @@ def load_arg():
                      default=2, help="number of hidden layer ")
   paser.add_argument("--seq_len", type=int, default=12,
                      help="sequence length")
-  paser.add_argument("--dist", type=float, default=5.0,
+  paser.add_argument("--dist", type=float, default=8.0,
                      help="distance from point to center")
   paser.add_argument("--hidden_size", type=int, default=64,
                      help="units num in each hidden layer")

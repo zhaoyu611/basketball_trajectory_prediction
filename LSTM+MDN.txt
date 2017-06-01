@@ -1,8 +1,0 @@
-#----------------------set sequence length as 5.0--------------------------------------
-
-the best test AUC is 0.725568181818 at 58 epoch, the model has 52762 parameters, lr_rate is 0.0011917222145, dropout is 0.648705953018, batchsize is 128, 
-
-the best test AUC is 1.0 at 46 epoch, the model has 52762 parameters, lr_rate is 0.00430444401395, dropout is 0.594276675567, batchsize is 32, 
-
-the best test AUC is 0.96170002471 at 156 epoch, the model has 52762 parameters, lr_rate is 0.00231433303875, dropout is 0.736276873751, batchsize is 128, 
-

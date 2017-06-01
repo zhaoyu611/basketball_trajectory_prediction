@@ -11,6 +11,7 @@ from sklearn import metrics
 from sample import *
 import hyperopt as hp
 from hyperopt import fmin, tpe, hp, partial
+from sklearn.utils import shuffle
 
 
 def load_arg():
@@ -20,7 +21,7 @@ def load_arg():
                      default=2, help="number of hidden layer ")
   paser.add_argument("--seq_len", type=int, default=12,
                      help="sequence length")
-  paser.add_argument("--dist", type=float, default=8.0,
+  paser.add_argument("--dist", type=float, default=5.0,
                      help="distance from point to center")
   paser.add_argument("--hidden_size", type=int, default=64,
                      help="units num in each hidden layer")
@@ -32,7 +33,7 @@ def load_arg():
                      help="epoch")
   paser.add_argument('--batch_size', type=int, default=64,
                      help="batch size")
-  paser.add_argument('--model_type', type=str, default='BLSTM_MDN_model',
+  paser.add_argument('--model_type', type=str, default='CNN_model',
                      help='the model type should be LSTM_model, \
                        bidir_LSTM_model, CNN_model, Conv_LSTM_model, \
                        LSTM_MDN_model or BSLTM_MDN_model.')
@@ -97,30 +98,42 @@ def main(params):
                  model.cost]
         _, train_acc, train_cost = sess.run(
             fetch, feed_dict=feed_dict)
-      #=======step 5: start testing============
       train_cost_list.append(train_cost)
-      # print "at {} epoch, the train accuracy is {}, the train cost is
-      # {}".format(i, train_acc, train_cost)
-      perm_ind = np.random.choice(
-          num_test, args.batch_size, replace=False)
-      feed_dict = {model.X: X_test[perm_ind], model.y: y_test[
-          perm_ind], model.drop_out: 1.0}
-      fetch = [model.accuracy, model.cost, model.y_pred, model.numel]
-      test_acc, test_cost, y_pred, numel = sess.run(
+
+      #=======step 5: start testing============
+      test_AUC_mean = []
+      test_cost_mean = []
+      # shuffle test data
+      X_test, y_test = shuffle(
+          X_test, y_test, random_state=i * 42)
+      for start, end in zip(range(0, num_test, args.batch_size),
+                            range(args.batch_size, num_test + 1, args.batch_size)):
+
+        feed_dict = {model.X: X_test[start:end], model.y: y_test[
+            start:end], model.drop_out: 1.0}
+        fetch = [model.accuracy, model.cost, model.y_pred, model.numel]
+        test_acc, test_cost_batch, y_pred, numel = sess.run(
           fetch, feed_dict=feed_dict)
-      test_AUC = sklearn.metrics.roc_auc_score(
-          y_test[perm_ind], y_pred[:, 1])
-      print "at {} epoch, the training cost is {}, the training accuracy is {}".format(i, train_cost, train_acc)
-      print "at {} epoch, the test cost is {}, the test accuracy is {}".format(i, test_cost, test_acc)
-      print "at {} epoch, the test AUC is {}".format(i, test_AUC)
-      print "------------------------------------------------------"
+        test_AUC_batch = sklearn.metrics.roc_auc_score(
+          y_test[start: end], y_pred[:, 1])
+        test_AUC_mean.append(test_AUC_batch)
+        test_cost_mean.append(test_cost_batch)
+      test_AUC = np.mean(test_AUC_mean)
+      test_cost = np.mean(test_cost_mean)
+
       test_AUC_list.append(test_AUC)
       test_cost_list.append(test_cost)
+      
+      print "at {} epoch, the training cost is {}, the training accuracy is {}".format(i, train_cost, train_acc)
+      print "at {} epoch, the test cost is {}, the test accuracy is {}".format(i, test_cost, test_acc)
+      print "at {} epoch, the test cost is {}, the test_AUC is {}".format(i, test_cost, test_AUC)
+      print "------------------------------------------------------"
 
       #----early stop---------
       # if test_AUC start to decrease, then stop caculating
       if i > 10:
         mean_test_AUC = np.mean(test_AUC_list[-10:])
+
         if test_AUC < mean_test_AUC * 0.8:
           break
 
@@ -131,8 +144,8 @@ def main(params):
     print "Finally, the model has {} parameters\n\n".format(numel)
     # wirte result in local
     with open('result.txt', 'a') as f:
-      f.write("the best test AUC is {} at {} epoch, the model has {} parameters, lr_rate is {}, dropout is {}, batchsize is {}, \n\n"\
-              .format(best_AUC, best_AUC_ind, numel,args.learning_rate, args.drop_out, args.batch_size))
+      f.write("the best test AUC is {} at {} epoch, the model has {} parameters, lr_rate is {}, dropout is {}, batchsize is {}, \n\n"
+              .format(best_AUC, best_AUC_ind, numel, args.learning_rate, args.drop_out, args.batch_size))
 
     #========step 5: draw results===============
     generate_trajectory = False
@@ -155,13 +168,13 @@ def main(params):
 
   return -best_AUC
 
-#use library "hyperopt" to finetune the hyerparameters
+# use library "hyperopt" to finetune the hyerparameters
 
 from hyperopt import fmin, tpe, hp, partial
 
 space = {"lr_rate": hp.uniform("lr_rate", 0.0005, 0.01),
          "dp_out": hp.uniform("dp_out", 0.5, 1),
-         "bt_size": hp.choice("bt_size", [32,64,128])}
+         "bt_size": hp.choice("bt_size", [32, 64, 128])}
 # algo = partial(tpe.suggest, n_startup_jobs=10)
 best = fmin(main, space, algo=tpe.suggest, max_evals=100)
 print best

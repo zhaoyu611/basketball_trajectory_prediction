@@ -87,7 +87,7 @@ def main(params):
   test_cost_list = []
   test_AUC_list = []
   with tf.Session() as sess:
-    sess.run(tf.initialize_all_variables())
+    sess.run(tf.global_variables_initializer())
     for i in range(args.epoch):
       for batch_num in range(num_train / args.batch_size):
         perm_ind = np.random.choice(
@@ -123,7 +123,7 @@ def main(params):
 
       test_AUC_list.append(test_AUC)
       test_cost_list.append(test_cost)
-      
+
       print "at {} epoch, the training cost is {}, the training accuracy is {}".format(i, train_cost, train_acc)
       print "at {} epoch, the test cost is {}, the test accuracy is {}".format(i, test_cost, test_acc)
       print "at {} epoch, the test cost is {}, the test_AUC is {}".format(i, test_cost, test_AUC)
@@ -143,7 +143,7 @@ def main(params):
     print "Finally, the best test AUC is {} at {} epoch,".format(best_AUC, best_AUC_ind)
     print "Finally, the model has {} parameters\n\n".format(numel)
     # wirte result in local
-    with open('result.txt', 'a') as f:
+    with open(args.model_type+'.txt', 'a') as f:
       f.write("the best test AUC is {} at {} epoch, the model has {} parameters, lr_rate is {}, dropout is {}, batchsize is {}, \n\n"
               .format(best_AUC, best_AUC_ind, numel, args.learning_rate, args.drop_out, args.batch_size))
 

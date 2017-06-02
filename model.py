@@ -30,7 +30,7 @@ class Model():
 
         # input_data is a [seq_len] length list, each has shape
         # [self.batch_size, crd_num]
-        self.input_data = tf.unpack(self.X, axis=1)
+        self.input_data = tf.unstack(self.X, axis=1)
 
     def LSTM_model(self):
         with tf.name_scope("LSTM") as scope:
@@ -105,7 +105,7 @@ class Model():
             # now conv2 has shape [self.batch_size, seq_len/k/k, 1, 64]
             conv_outputs = tf.squeeze(conv2, 2)
             # now conv_outputs has shape [self.batch_size, seq_len/k/k, 64]
-            outputs = tf.unpack(conv_outputs, axis=1)
+            outputs = tf.unstack(conv_outputs, axis=1)
             # now outputs are a list of seq_len/k/k length, each has shape
             # [self.batch_size, 64]
             outputs = outputs[-1]
@@ -151,7 +151,7 @@ class Model():
             # now conv2 has shape [self.batch_size, seq_len/k/k, 1, 64]
             conv_outputs = tf.squeeze(conv2, 2)
             # now conv_outputs has shape [self.batch_size, seq_len/k/k, 64]
-            conv_outputs_list = tf.unpack(conv_outputs, axis=1)
+            conv_outputs_list = tf.unstack(conv_outputs, axis=1)
             # now outputs are a list of seq_len/k/k length, each has shape
             # [self.batch_size, 64]
 

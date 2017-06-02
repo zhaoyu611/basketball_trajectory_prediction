@@ -1,0 +1,54 @@
+the best test AUC is 0.530103304405 at 168 epoch, the model has 2532 parameters, lr_rate is 0.00730133320703, dropout is 0.715079024089, batchsize is 128, 
+
+the best test AUC is 0.569985366905 at 186 epoch, the model has 2532 parameters, lr_rate is 0.00527972263704, dropout is 0.647603352479, batchsize is 64, 
+
+the best test AUC is 0.539173431677 at 119 epoch, the model has 2532 parameters, lr_rate is 0.00431973872828, dropout is 0.781068656891, batchsize is 64, 
+
+the best test AUC is 0.585655241116 at 0 epoch, the model has 2532 parameters, lr_rate is 0.00421167077855, dropout is 0.500502197856, batchsize is 128, 
+
+the best test AUC is 0.623699428199 at 197 epoch, the model has 2532 parameters, lr_rate is 0.00311304430882, dropout is 0.595639532395, batchsize is 64, 
+
+the best test AUC is 0.577499598782 at 160 epoch, the model has 2532 parameters, lr_rate is 0.00145540733436, dropout is 0.501592555837, batchsize is 128, 
+
+the best test AUC is 0.487232783584 at 14 epoch, the model has 2532 parameters, lr_rate is 0.00919780389035, dropout is 0.767098307436, batchsize is 64, 
+
+the best test AUC is 0.636829939615 at 46 epoch, the model has 2532 parameters, lr_rate is 0.00816785558776, dropout is 0.563563367573, batchsize is 128, 
+
+the best test AUC is 0.611534298431 at 40 epoch, the model has 2532 parameters, lr_rate is 0.00993882494187, dropout is 0.784954616261, batchsize is 32, 
+
+the best test AUC is 0.662887455526 at 101 epoch, the model has 2532 parameters, lr_rate is 0.00188551705118, dropout is 0.805138076843, batchsize is 32, 
+
+the best test AUC is 0.52479590549 at 79 epoch, the model has 2532 parameters, lr_rate is 0.00772185422095, dropout is 0.507759193109, batchsize is 128, 
+
+the best test AUC is 0.566853820648 at 198 epoch, the model has 2532 parameters, lr_rate is 0.00498468915065, dropout is 0.607188211565, batchsize is 128, 
+
+the best test AUC is 0.64785284375 at 27 epoch, the model has 2532 parameters, lr_rate is 0.00866671186816, dropout is 0.738571373259, batchsize is 64, 
+
+the best test AUC is 0.498731716129 at 175 epoch, the model has 2532 parameters, lr_rate is 0.000835371222378, dropout is 0.601194629277, batchsize is 64, 
+
+the best test AUC is 0.531032782707 at 130 epoch, the model has 2532 parameters, lr_rate is 0.000988465780256, dropout is 0.582876937024, batchsize is 32, 
+
+the best test AUC is 0.505292364831 at 21 epoch, the model has 2532 parameters, lr_rate is 0.00190173759065, dropout is 0.689677046116, batchsize is 64, 
+
+the best test AUC is 0.501470212782 at 12 epoch, the model has 2532 parameters, lr_rate is 0.0080633227259, dropout is 0.629937106534, batchsize is 64, 
+
+the best test AUC is 0.58289317491 at 4 epoch, the model has 2532 parameters, lr_rate is 0.00853161051767, dropout is 0.658532460492, batchsize is 32, 
+
+the best test AUC is 0.528611953473 at 198 epoch, the model has 2532 parameters, lr_rate is 0.00169531081758, dropout is 0.989945479949, batchsize is 32, 
+
+the best test AUC is 0.525406563281 at 86 epoch, the model has 2532 parameters, lr_rate is 0.00272993418127, dropout is 0.922571874461, batchsize is 32, 
+
+the best test AUC is 0.651111521933 at 28 epoch, the model has 2532 parameters, lr_rate is 0.00962100645101, dropout is 0.857924180646, batchsize is 32, 
+
+the best test AUC is 0.511477617673 at 46 epoch, the model has 2532 parameters, lr_rate is 0.00620159217157, dropout is 0.61348954719, batchsize is 128, 
+
+the best test AUC is 0.609262388472 at 41 epoch, the model has 2532 parameters, lr_rate is 0.00634906379057, dropout is 0.859529504347, batchsize is 32, 
+
+the best test AUC is 0.505652175441 at 2 epoch, the model has 2532 parameters, lr_rate is 0.00616297827616, dropout is 0.875011016054, batchsize is 32, 
+
+the best test AUC is 0.614005343862 at 152 epoch, the model has 2532 parameters, lr_rate is 0.0071601157114, dropout is 0.843159650495, batchsize is 32, 
+
+the best test AUC is 0.650822730837 at 119 epoch, the model has 2532 parameters, lr_rate is 0.00978766089125, dropout is 0.968297577347, batchsize is 32, 
+
+the best test AUC is 0.62209401971 at 175 epoch, the model has 2532 parameters, lr_rate is 0.00299404743837, dropout is 0.824183584448, batchsize is 32, 
+

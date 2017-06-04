@@ -29,7 +29,7 @@ def load_arg():
                      help="drop out probability")
   paser.add_argument('--learning_rate', type=float, default=0.005,
                      help="learning_rate")
-  paser.add_argument('--epoch', type=int, default=500,
+  paser.add_argument('--epoch', type=int, default=300,
                      help="epoch")
   paser.add_argument('--batch_size', type=int, default=64,
                      help="batch size")
@@ -187,11 +187,14 @@ for dist in [2., 3., 4., 5., 6., 7., 8.,]:
            "bt_size": hp.choice("bt_size", batch_list),
            "distance": hp.choice("distance", [dist])}
   # algo = partial(tpe.suggest, n_startup_jobs=10)
-  best = fmin(main, space, algo=tpe.suggest, max_evals=50)
+  try:
+    best = fmin(main, space, algo=tpe.suggest, max_evals=50)
+  except Exception as err:
+    with open("error_info.txt","a") as f:
+      f.write(str(err))
   best["bt_size"] = batch_list[best["bt_size"]]
   best["distance"] = dist
   best_AUC = -main(best)
-
   with open('finetune.txt', 'a') as f:
     f.write("At distance {}, the best AUC is {}, its lr_rate is {}, drop_out is {}, batch_size is {}\n\n".
             format(dist, best_AUC, best["lr_rate"], best["dp_out"], best["bt_size"]))

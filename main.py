@@ -7,7 +7,7 @@ from model import Model
 # from mpl_toolkits.mplot3d import Axes3D
 import sklearn
 from sklearn import metrics
-
+import time
 from sample import *
 import hyperopt as hp
 from hyperopt import fmin, tpe, hp, partial
@@ -29,14 +29,14 @@ def load_arg():
                      help="drop out probability")
   paser.add_argument('--learning_rate', type=float, default=0.005,
                      help="learning_rate")
-  paser.add_argument('--epoch', type=int, default=200,
+  paser.add_argument('--epoch', type=int, default=500,
                      help="epoch")
   paser.add_argument('--batch_size', type=int, default=64,
                      help="batch size")
   paser.add_argument('--model_type', type=str, default='CNN_model',
                      help='the model type should be LSTM_model, \
                        bidir_LSTM_model, CNN_model, Conv_LSTM_model, \
-                       LSTM_MDN_model or BSLTM_MDN_model.')
+                       LSTM_MDN_model or BLSTM_MDN_model.')
 
   args = paser.parse_args()
   return args
@@ -48,7 +48,10 @@ def main(params):
   args.learning_rate = params["lr_rate"]
   args.drop_out = params["dp_out"]
   args.batch_size = params["bt_size"]
-  print "learning_rate is {}, drop_out is {}, batch_size is {}".format(params["lr_rate"], params["dp_out"], params["bt_size"])
+  args.dist = params["distance"]
+  print "At distance {}, learning_rate is {}, drop_out is {}, batch_size is {}".\
+        format(params["distance"], params["lr_rate"],
+               params["dp_out"], params["bt_size"])
   #=======step 2: preprocess data==========
   direc = './data/'  # directory of data file
   csv_file = 'seq_all.csv'
@@ -82,7 +85,7 @@ def main(params):
     return
   model.Evaluating()
   #=======step 4: start training===========
-
+  start_time = time.time()
   train_cost_list = []
   test_cost_list = []
   test_AUC_list = []
@@ -113,9 +116,9 @@ def main(params):
             start:end], model.drop_out: 1.0}
         fetch = [model.accuracy, model.cost, model.y_pred, model.numel]
         test_acc, test_cost_batch, y_pred, numel = sess.run(
-          fetch, feed_dict=feed_dict)
+            fetch, feed_dict=feed_dict)
         test_AUC_batch = sklearn.metrics.roc_auc_score(
-          y_test[start: end], y_pred[:, 1])
+            y_test[start: end], y_pred[:, 1])
         test_AUC_mean.append(test_AUC_batch)
         test_cost_mean.append(test_cost_batch)
       test_AUC = np.mean(test_AUC_mean)
@@ -126,7 +129,7 @@ def main(params):
 
       print "at {} epoch, the training cost is {}, the training accuracy is {}".format(i, train_cost, train_acc)
       print "at {} epoch, the test cost is {}, the test accuracy is {}".format(i, test_cost, test_acc)
-      print "at {} epoch, the test cost is {}, the test_AUC is {}".format(i, test_cost, test_AUC)
+      print "at {} epoch, the test_AUC is {}".format(i, test_AUC)
       print "------------------------------------------------------"
 
       #----early stop---------
@@ -139,13 +142,16 @@ def main(params):
 
     best_AUC = max(test_AUC_list)
     best_AUC_ind = test_AUC_list.index(best_AUC)
+    end_time = time.time()
+    spend_time = end_time - start_time
     print "========================================================"
-    print "Finally, the best test AUC is {} at {} epoch,".format(best_AUC, best_AUC_ind)
+    print "Finally, at distance {}, the best test AUC is {} at {} epoch,".\
+          format(args.dist, best_AUC, best_AUC_ind)
     print "Finally, the model has {} parameters\n\n".format(numel)
     # wirte result in local
-    with open(args.model_type+'.txt', 'a') as f:
-      f.write("the best test AUC is {} at {} epoch, the model has {} parameters, lr_rate is {}, dropout is {}, batchsize is {}, \n\n"
-              .format(best_AUC, best_AUC_ind, numel, args.learning_rate, args.drop_out, args.batch_size))
+    with open(args.model_type + '.txt', 'a') as f:
+      f.write("At distance {}, the best test AUC is {} at {} epoch, the model has {} parameters, lr_rate is {}, dropout is {}, batchsize is {}, spend time is {}, \n\n"
+              .format(args.dist, best_AUC, best_AUC_ind, numel, args.learning_rate, args.drop_out, args.batch_size, spend_time))
 
     #========step 5: draw results===============
     generate_trajectory = False
@@ -168,18 +174,24 @@ def main(params):
 
   return -best_AUC
 
-# use library "hyperopt" to finetune the hyerparameters
+
+# =========use library "hyperopt" to finetune the hyerparameters==============
 
 from hyperopt import fmin, tpe, hp, partial
 
-space = {"lr_rate": hp.uniform("lr_rate", 0.0005, 0.01),
-         "dp_out": hp.uniform("dp_out", 0.5, 1),
-         "bt_size": hp.choice("bt_size", [32, 64, 128])}
-# algo = partial(tpe.suggest, n_startup_jobs=10)
-best = fmin(main, space, algo=tpe.suggest, max_evals=100)
-print best
-print main(best)
+batch_list = [32, 64, 128]
 
-with open('finetune.txt', 'a') as f:
-  f.write("the best AUC is {}, its lr_rate is {}, drop_out is {}, \
-    batch_size is {}".format(main(best), best["lr_rate"], best["dp_out"], est["bt_size"]))
+for dist in [2., 3., 4., 5., 6., 7., 8.,]:
+  space = {"lr_rate": hp.uniform("lr_rate", 0.0005, 0.01),
+           "dp_out": hp.uniform("dp_out", 0.5, 1),
+           "bt_size": hp.choice("bt_size", batch_list),
+           "distance": hp.choice("distance", [dist])}
+  # algo = partial(tpe.suggest, n_startup_jobs=10)
+  best = fmin(main, space, algo=tpe.suggest, max_evals=50)
+  best["bt_size"] = batch_list[best["bt_size"]]
+  best["distance"] = dist
+  best_AUC = -main(best)
+
+  with open('finetune.txt', 'a') as f:
+    f.write("At distance {}, the best AUC is {}, its lr_rate is {}, drop_out is {}, batch_size is {}\n\n".
+            format(dist, best_AUC, best["lr_rate"], best["dp_out"], best["bt_size"]))

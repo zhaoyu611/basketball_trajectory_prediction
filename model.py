@@ -34,14 +34,14 @@ class Model():
 
     def LSTM_model(self):
         with tf.name_scope("LSTM") as scope:
-            cell = tf.nn.rnn_cell.LSTMCell(
-                self.hidden_size, use_peepholes=True)
+            cell = tf.contrib.rnn.BasicLSTMCell(
+                self.hidden_size)
 
-            cell = tf.nn.rnn_cell.MultiRNNCell([cell] * self.hidden_layers)
+            cell = tf.contrib.rnn.MultiRNNCell([cell] * self.hidden_layers)
 
-            cell = tf.nn.rnn_cell.DropoutWrapper(
+            cell = tf.contrib.rnn.DropoutWrapper(
                 cell, output_keep_prob=self.drop_out)
-            outputs, _ = tf.nn.rnn(cell, self.input_data, dtype=tf.float32)
+            outputs, _ = tf.contrib.rnn(cell, self.input_data, dtype=tf.float32)
             # outputs is a list of seq_len length, each has shape [batch_size,
             # hidden_size]
             self.y_pred = tf.matmul(outputs[-1], self.W_out) + self.b_out
@@ -50,13 +50,13 @@ class Model():
     def bidir_LSTM_model(self):
         with tf.name_scope("bidir_LSTM") as scope:
             assert self.hidden_size % 2 == 0, "hidden_size must be even number for bidir-LSTM"
-            cell = tf.nn.rnn_cell.LSTMCell(self.hidden_size / 2)
+            cell = tf.contrib.rnn.BasicLSTMCell(self.hidden_size / 2)
             cells_fw = [cell] * self.hidden_layers
             cells_bw = [cell] * self.hidden_layers
             pre_layer = self.input_data
             for i, (cell_fw, cell_bw) in enumerate(zip(cells_fw, cells_bw)):
                 with vs.variable_scope("cell{}".format(i)) as cell_scope:
-                    pre_layer, _, _ = tf.nn.bidirectional_rnn(
+                    pre_layer, _, _ = tf.contrib.rnn.static_bidirectional_rnn(
                         cell_fw, cell_bw, pre_layer, dtype=tf.float32)
             outputs = pre_layer
 
@@ -190,7 +190,7 @@ class Model():
             b_o = tf.Variable(tf.constant(0.5, shape=[output_units]))
             # For comparison with XYZ, only up to last time_step
             # --> because for final time_step you cannot make a prediction
-            outputs_tensor = tf.concat(0, outputs[:-1])
+            outputs_tensor = tf.concat(axis=0, values=outputs[:-1])
             # is of size [batch_size*seq_len by output_units]
             h_out_tensor = tf.nn.xw_plus_b(outputs_tensor, W_o, b_o)
 
@@ -204,21 +204,21 @@ class Model():
             # x_next = tf.slice(x,[0,0,1],[batch_size,3,sl-1])  #in size [batch_size,
             # output_units, sl-1]
             MDN_X = tf.transpose(self.X, [0, 2, 1])
-            x_next = tf.sub(MDN_X[:, :3, 1:], MDN_X[:, :3, :self.seq_len - 1])
+            x_next = tf.subtract(MDN_X[:, :3, 1:], MDN_X[:, :3, :self.seq_len - 1])
             # From here any, many variables have size [batch_size, mixtures,
             # sl-1]
-            xn1, xn2, xn3 = tf.split(1, 3, x_next)
+            xn1, xn2, xn3 = tf.split(axis=1, num_or_size_splits=3, value=x_next)
             self.mu1, self.mu2, self.mu3, self.s1, self.s2, self.s3, self.rho, self.theta = tf.split(
-                1, params, h_xyz)
+                axis=1, num_or_size_splits=params, value=h_xyz)
 
             # make the theta mixtures
             # softmax all the theta's:
             max_theta = tf.reduce_max(self.theta, 1, keep_dims=True)
-            self.theta = tf.sub(self.theta, max_theta)
+            self.theta = tf.subtract(self.theta, max_theta)
             self.theta = tf.exp(self.theta)
-            normalize_theta = tf.inv(
+            normalize_theta = tf.reciprocal(
                 tf.reduce_sum(self.theta, 1, keep_dims=True))
-            self.theta = tf.mul(normalize_theta, self.theta)
+            self.theta = tf.multiply(normalize_theta, self.theta)
 
             # Deviances are non-negative and tho between -1 and 1
             self.s1 = tf.exp(self.s1)
@@ -230,10 +230,10 @@ class Model():
             px1x2 = tf_2d_normal(xn1, xn2, self.mu1, self.mu2,
                                  self.s1, self.s2, self.rho)
             px3 = tf_1d_normal(xn3, self.mu3, self.s3)
-            px1x2x3 = tf.mul(px1x2, px3)
+            px1x2x3 = tf.multiply(px1x2, px3)
 
             # Sum along the mixtures in dimension 1
-            px1x2x3_mixed = tf.reduce_sum(tf.mul(px1x2x3, self.theta), 1)
+            px1x2x3_mixed = tf.reduce_sum(tf.multiply(px1x2x3, self.theta), 1)
             print('You are using %.0f mixtures' % self.mixtures)
             # at the beginning, some errors are exactly zero.
             loss_seq = -tf.log(tf.maximum(px1x2x3_mixed, 1e-20))

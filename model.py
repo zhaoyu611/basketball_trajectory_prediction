@@ -41,7 +41,7 @@ class Model():
 
             cell = tf.contrib.rnn.DropoutWrapper(
                 cell, output_keep_prob=self.drop_out)
-            outputs, _ = tf.contrib.rnn(cell, self.input_data, dtype=tf.float32)
+            outputs, _ = tf.contrib.rnn.static_rnn(cell, self.input_data, dtype=tf.float32)
             # outputs is a list of seq_len length, each has shape [batch_size,
             # hidden_size]
             self.y_pred = tf.matmul(outputs[-1], self.W_out) + self.b_out

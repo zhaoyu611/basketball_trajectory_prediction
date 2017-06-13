@@ -1,0 +1,9 @@
+Only one class present in y_true. ROC AUC score is not defined in that case.'module' object has no attribute 'unstack'Only one class present in y_true. 
+ROC AUC score is not defined in that case.Only one class present in y_true. 
+ROC AUC score is not defined in that case.Only one class present in y_true. 
+ROC AUC score is not defined in that case.
+'module' object is not callable'module' object is not callable'module' object is not callable'module' object is not callable'module' object is not callable'module' object is not callable'module' object is not callable'module' object is not callable'module' object is not callable'module' object is not callable'module' object is not callable
+'module' object is not callable
+'module' object is not callable
+'module' object is not callable
+'module' object is not callable

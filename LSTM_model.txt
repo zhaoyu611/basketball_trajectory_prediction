@@ -1,0 +1,6 @@
+At distance 2.0, the best test AUC is 0.877399267636 at 38 epoch, the model has 50818 parameters, lr_rate is 0.00746409787801, dropout is 0.72565716975, batchsize is 128, spend time is 300.248461008, 
+
+At distance 2.0, the best test AUC is 0.882900698646 at 16 epoch, the model has 50818 parameters, lr_rate is 0.0099630236828, dropout is 0.980288000602, batchsize is 128, spend time is 307.86814189, 
+
+At distance 2.0, the best test AUC is 0.887121962053 at 38 epoch, the model has 50818 parameters, lr_rate is 0.0076911502914, dropout is 0.629181470068, batchsize is 128, spend time is 312.868067026, 
+

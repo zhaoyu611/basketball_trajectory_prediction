@@ -33,7 +33,7 @@ def load_arg():
                      help="epoch")
   paser.add_argument('--batch_size', type=int, default=64,
                      help="batch size")
-  paser.add_argument('--model_type', type=str, default='CNN_model',
+  paser.add_argument('--model_type', type=str, default='BLSTM_MDN_model',
                      help='the model type should be LSTM_model, \
                        bidir_LSTM_model, CNN_model, Conv_LSTM_model, \
                        LSTM_MDN_model or BLSTM_MDN_model.')
@@ -181,7 +181,7 @@ from hyperopt import fmin, tpe, hp, partial
 
 batch_list = [32, 64, 128]
 
-for dist in [2., 3., 4., 5., 6., 7., 8.,]:
+for dist in [ 2., 3., 4., 5., 6., 7., 8.]:
   space = {"lr_rate": hp.uniform("lr_rate", 0.0005, 0.01),
            "dp_out": hp.uniform("dp_out", 0.5, 1),
            "bt_size": hp.choice("bt_size", batch_list),
@@ -189,12 +189,14 @@ for dist in [2., 3., 4., 5., 6., 7., 8.,]:
   # algo = partial(tpe.suggest, n_startup_jobs=10)
   try:
     best = fmin(main, space, algo=tpe.suggest, max_evals=50)
+    best["bt_size"] = batch_list[best["bt_size"]]
+    best["distance"] = dist
+    best_AUC = -main(best)
+    with open('finetune.txt', 'a') as f:
+      f.write("At distance {}, the best AUC is {}, its lr_rate is {}, drop_out is {}, batch_size is {}\n\n".
+              format(dist, best_AUC, best["lr_rate"], best["dp_out"], best["bt_size"]))
   except Exception as err:
     with open("error_info.txt","a") as f:
-      f.write(str(err))
-  best["bt_size"] = batch_list[best["bt_size"]]
-  best["distance"] = dist
-  best_AUC = -main(best)
-  with open('finetune.txt', 'a') as f:
-    f.write("At distance {}, the best AUC is {}, its lr_rate is {}, drop_out is {}, batch_size is {}\n\n".
-            format(dist, best_AUC, best["lr_rate"], best["dp_out"], best["bt_size"]))
+      f.write(str(err)+'\n')
+    print err
+

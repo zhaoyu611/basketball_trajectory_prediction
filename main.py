@@ -14,6 +14,7 @@ from hyperopt import fmin, tpe, hp, partial
 from sklearn.utils import shuffle
 
 
+
 def load_arg():
 
   paser = argparse.ArgumentParser()
@@ -33,7 +34,7 @@ def load_arg():
                      help="epoch")
   paser.add_argument('--batch_size', type=int, default=64,
                      help="batch size")
-  paser.add_argument('--model_type', type=str, default='BLSTM_MDN_model',
+  paser.add_argument('--model_type', type=str, default='bidir_LSTM_model',
                      help='the model type should be LSTM_model, \
                        bidir_LSTM_model, CNN_model, Conv_LSTM_model, \
                        LSTM_MDN_model or BLSTM_MDN_model.')
@@ -104,8 +105,8 @@ def main(params):
       train_cost_list.append(train_cost)
 
       #=======step 5: start testing============
-      test_AUC_mean = []
-      test_cost_mean = []
+      test_AUC_batch_list = []
+      test_cost_batch_list = []
       # shuffle test data
       X_test, y_test = shuffle(
           X_test, y_test, random_state=i * 42)
@@ -119,10 +120,10 @@ def main(params):
             fetch, feed_dict=feed_dict)
         test_AUC_batch = sklearn.metrics.roc_auc_score(
             y_test[start: end], y_pred[:, 1])
-        test_AUC_mean.append(test_AUC_batch)
-        test_cost_mean.append(test_cost_batch)
-      test_AUC = np.mean(test_AUC_mean)
-      test_cost = np.mean(test_cost_mean)
+        test_AUC_batch_list.append(test_AUC_batch)
+        test_cost_batch_list.append(test_cost_batch)
+      test_AUC = np.mean(test_AUC_batch_list)
+      test_cost = np.mean(test_cost_batch_list)
 
       test_AUC_list.append(test_AUC)
       test_cost_list.append(test_cost)
@@ -131,6 +132,8 @@ def main(params):
       print "at {} epoch, the test cost is {}, the test accuracy is {}".format(i, test_cost, test_acc)
       print "at {} epoch, the test_AUC is {}".format(i, test_AUC)
       print "------------------------------------------------------"
+
+
 
       #----early stop---------
       # if test_AUC start to decrease, then stop caculating
@@ -144,6 +147,7 @@ def main(params):
     best_AUC_ind = test_AUC_list.index(best_AUC)
     end_time = time.time()
     spend_time = end_time - start_time
+
     print "========================================================"
     print "Finally, at distance {}, the best test AUC is {} at {} epoch,".\
           format(args.dist, best_AUC, best_AUC_ind)
@@ -181,7 +185,7 @@ from hyperopt import fmin, tpe, hp, partial
 
 batch_list = [32, 64, 128]
 
-for dist in [ 2., 3., 4., 5., 6., 7., 8.]:
+for dist in [5.]:
   space = {"lr_rate": hp.uniform("lr_rate", 0.0005, 0.01),
            "dp_out": hp.uniform("dp_out", 0.5, 1),
            "bt_size": hp.choice("bt_size", batch_list),

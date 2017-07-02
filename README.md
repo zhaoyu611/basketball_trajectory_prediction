@@ -40,8 +40,8 @@ Here is the explanation of each argpase.
   * paser.add_argument('--batch_size', type=int, default=64,
                      help="batch size")                    
   * paser.add_argument('--model_type', type=str, default='BLSTM_MDN_model',
-                     help='the model type should be LSTM_model, \
-                       bidir_LSTM_model, CNN_model, Conv_LSTM_model, \
+                     help='the model type should be LSTM_model, 
+                       bidir_LSTM_model, CNN_model, Conv_LSTM_model, 
                        LSTM_MDN_model or BLSTM_MDN_model.')  
                        
 If you want to generate some trajetories, please set "generate_trajectory" as True in code. Because it is False in default.

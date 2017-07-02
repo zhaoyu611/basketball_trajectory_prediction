@@ -7,9 +7,9 @@ I did 2 jobs in the main, Hit or miss classification and trajecotry generating.
 In the first job, users can choose one of models, including CNN, LSTM, BLSTM, LSTM-MDN and BLSTM-MDN. And trajectory genarating only works for LSTM-MDN and BLSTM-MDN.
 
 # Setup
-TesnsorFlow 1.0 <br>
-sklearn <br>
-hyperopt <br>
+* TesnsorFlow 1.0 <br>
+* sklearn <br>
+* hyperopt <br>
 
 # The files
 * data: the original data is in 'seq_all.csv.tar.gz', and the 'seq_all.csv' is the unziped dataset.
@@ -24,42 +24,34 @@ hyperopt <br>
 Simply run file "main.py" in terminal with default argpases: python main.py
 Here is the explanation of each argpase.
   paser.add_argument("--hidden_layers", type=int,
-                     default=2, help="number of hidden layer ")
-                     
+                     default=2, help="number of hidden layer ")    <br>               
   paser.add_argument("--seq_len", type=int, default=12,
-                     help="sequence length")
-                     
+                     help="sequence length")  <br>
   paser.add_argument("--dist", type=float, default=5.0,
-                     help="distance from point to center")
-                     
+                     help="distance from point to center")       <br>             
   paser.add_argument("--hidden_size", type=int, default=64,
-                     help="units num in each hidden layer")
-                     
+                     help="units num in each hidden layer")     <br>               
   paser.add_argument("--drop_out", type=float, default=0.7,
-                     help="drop out probability")
-                     
+                     help="drop out probability")               <br>     
   paser.add_argument('--learning_rate', type=float, default=0.005,
-                     help="learning_rate")
-                     
+                     help="learning_rate")                     <br>
   paser.add_argument('--epoch', type=int, default=1,
-                     help="epoch")
-                     
+                     help="epoch")                     <br>
   paser.add_argument('--batch_size', type=int, default=64,
-                     help="batch size")
-                     
+                     help="batch size")                     <br>
   paser.add_argument('--model_type', type=str, default='BLSTM_MDN_model',
                      help='the model type should be LSTM_model, \
                        bidir_LSTM_model, CNN_model, Conv_LSTM_model, \
-                       LSTM_MDN_model or BLSTM_MDN_model.')
+                       LSTM_MDN_model or BLSTM_MDN_model.')  <br>
                        
 If you want to generate some trajetories, please set "generate_trajectory" as True in code. Because it is False in default.
 It should be noted that it only generates traejctory with BLSTM-MDN or LSTM-MDN.
 
 # Contact me
-Be free the ust the code for studying. But please contact me if you want for commercial applying.
-You are welcome to pull requests or issues. 
-E-mail: zhaoyuafeu@gmail.com
-Facebook: zhaoyuafeu
+Be free the ust the code for studying. But please contact me if you want for commercial applying. <br>
+You are welcome to pull requests or issues. <br>
+E-mail: zhaoyuafeu@gmail.com <br>
+Facebook: zhaoyuafeu <br>
 
 
 

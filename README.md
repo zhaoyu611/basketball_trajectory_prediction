@@ -24,6 +24,7 @@ In the first job, users can choose one of models, including CNN, LSTM, BLSTM, LS
 Simply run file "main.py" in terminal with default argpases: python main.py
 Here is the explanation of each argpase.
 ~~~python
+
   paser.add_argument("--hidden_layers", type=int,
                      default=2, help="number of hidden layer ")
   paser.add_argument("--seq_len", type=int, default=12,
@@ -54,6 +55,7 @@ Be free the ust the code for studying. But please contact me if you want for com
 You are welcome to pull requests or issues. <br>
 E-mail: zhaoyuafeu@gmail.com <br>
 Facebook: zhaoyuafeu <br>
+
 
 
 

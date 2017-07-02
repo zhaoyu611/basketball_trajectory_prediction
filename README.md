@@ -23,26 +23,26 @@ In the first job, users can choose one of models, including CNN, LSTM, BLSTM, LS
 # Run
 Simply run file "main.py" in terminal with default argpases: python main.py
 Here is the explanation of each argpase.
-  paser.add_argument("--hidden_layers", type=int,
-                     default=2, help="number of hidden layer ")    <br>               
-  paser.add_argument("--seq_len", type=int, default=12,
-                     help="sequence length")  <br>
-  paser.add_argument("--dist", type=float, default=5.0,
-                     help="distance from point to center")       <br>             
-  paser.add_argument("--hidden_size", type=int, default=64,
-                     help="units num in each hidden layer")     <br>               
-  paser.add_argument("--drop_out", type=float, default=0.7,
-                     help="drop out probability")               <br>     
-  paser.add_argument('--learning_rate', type=float, default=0.005,
-                     help="learning_rate")                     <br>
-  paser.add_argument('--epoch', type=int, default=1,
-                     help="epoch")                     <br>
-  paser.add_argument('--batch_size', type=int, default=64,
-                     help="batch size")                     <br>
-  paser.add_argument('--model_type', type=str, default='BLSTM_MDN_model',
+  * paser.add_argument("--hidden_layers", type=int,
+                     default=2, help="number of hidden layer ")                
+  * paser.add_argument("--seq_len", type=int, default=12,
+                     help="sequence length") 
+  * paser.add_argument("--dist", type=float, default=5.0,
+                     help="distance from point to center")                 
+  * paser.add_argument("--hidden_size", type=int, default=64,
+                     help="units num in each hidden layer")                
+  * paser.add_argument("--drop_out", type=float, default=0.7,
+                     help="drop out probability")                 
+  * paser.add_argument('--learning_rate', type=float, default=0.005,
+                     help="learning_rate")                    
+  * paser.add_argument('--epoch', type=int, default=1,
+                     help="epoch")                    
+  * paser.add_argument('--batch_size', type=int, default=64,
+                     help="batch size")                    
+  * paser.add_argument('--model_type', type=str, default='BLSTM_MDN_model',
                      help='the model type should be LSTM_model, \
                        bidir_LSTM_model, CNN_model, Conv_LSTM_model, \
-                       LSTM_MDN_model or BLSTM_MDN_model.')  <br>
+                       LSTM_MDN_model or BLSTM_MDN_model.')  
                        
 If you want to generate some trajetories, please set "generate_trajectory" as True in code. Because it is False in default.
 It should be noted that it only generates traejctory with BLSTM-MDN or LSTM-MDN.

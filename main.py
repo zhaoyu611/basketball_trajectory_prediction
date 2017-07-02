@@ -30,7 +30,7 @@ def load_arg():
                      help="drop out probability")
   paser.add_argument('--learning_rate', type=float, default=0.005,
                      help="learning_rate")
-  paser.add_argument('--epoch', type=int, default=1,
+  paser.add_argument('--epoch', type=int, default=300,
                      help="epoch")
   paser.add_argument('--batch_size', type=int, default=64,
                      help="batch size")
@@ -158,7 +158,7 @@ def main(params):
               .format(args.dist, best_AUC, best_AUC_ind, numel, args.learning_rate, args.drop_out, args.batch_size, spend_time))
 
     #========step 5: draw results===============
-    generate_trajectory = True
+    generate_trajectory = False
     if generate_trajectory:
       if args.model_type == 'LSTM_MDN_model' or args.model_type == 'BLSTM_MDN_model':
         perm_ind = np.random.choice(num_test, args.batch_size, replace=False)

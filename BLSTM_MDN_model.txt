@@ -1,0 +1,118 @@
+At distance 5.0, the best test AUC is 0.612864590323 at 26 epoch, the model has 35994 parameters, lr_rate is 0.00700340425695, dropout is 0.683075812778, batchsize is 32, spend time is 229.576307774, 
+
+At distance 5.0, the best test AUC is 0.867230514421 at 27 epoch, the model has 35994 parameters, lr_rate is 0.00680131883437, dropout is 0.9306357928, batchsize is 32, spend time is 223.837000132, 
+
+At distance 5.0, the best test AUC is 0.707193761206 at 13 epoch, the model has 35994 parameters, lr_rate is 0.00112243214723, dropout is 0.923147705713, batchsize is 64, spend time is 116.817927837, 
+
+At distance 5.0, the best test AUC is 0.872169536235 at 28 epoch, the model has 35994 parameters, lr_rate is 0.00886165288927, dropout is 0.881167991269, batchsize is 64, spend time is 113.048650026, 
+
+At distance 5.0, the best test AUC is 0.799063671417 at 299 epoch, the model has 35994 parameters, lr_rate is 0.00279592937266, dropout is 0.712084452858, batchsize is 64, spend time is 1205.63607597, 
+
+At distance 5.0, the best test AUC is 0.850317538513 at 294 epoch, the model has 35994 parameters, lr_rate is 0.00696247258229, dropout is 0.848307602688, batchsize is 128, spend time is 609.825410128, 
+
+At distance 5.0, the best test AUC is 0.89671358712 at 279 epoch, the model has 35994 parameters, lr_rate is 0.0086535547177, dropout is 0.955761073395, batchsize is 32, spend time is 2450.28249097, 
+
+At distance 5.0, the best test AUC is 0.659924600485 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00990224141483, dropout is 0.74241018401, batchsize is 32, spend time is 228.087759018, 
+
+At distance 5.0, the best test AUC is 0.832714883282 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00400743034453, dropout is 0.728308782803, batchsize is 64, spend time is 119.018688917, 
+
+At distance 5.0, the best test AUC is 0.552288704831 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00248134211641, dropout is 0.934149181744, batchsize is 64, spend time is 118.335422039, 
+
+At distance 5.0, the best test AUC is 0.531949602531 at 28 epoch, the model has 35994 parameters, lr_rate is 0.00251168920891, dropout is 0.87274270207, batchsize is 64, spend time is 115.006141901, 
+
+At distance 5.0, the best test AUC is 0.608100713101 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00853869025651, dropout is 0.988165505823, batchsize is 128, spend time is 64.0666179657, 
+
+At distance 5.0, the best test AUC is 0.580741414628 at 29 epoch, the model has 35994 parameters, lr_rate is 0.0036800367963, dropout is 0.830285745501, batchsize is 64, spend time is 111.394496202, 
+
+At distance 5.0, the best test AUC is 0.617330483249 at 28 epoch, the model has 35994 parameters, lr_rate is 0.000691368635189, dropout is 0.85104998865, batchsize is 128, spend time is 55.87834692, 
+
+At distance 5.0, the best test AUC is 0.700600205682 at 27 epoch, the model has 35994 parameters, lr_rate is 0.00144662099735, dropout is 0.534740023384, batchsize is 32, spend time is 231.3983531, 
+
+At distance 5.0, the best test AUC is 0.848910515225 at 28 epoch, the model has 35994 parameters, lr_rate is 0.00503444290723, dropout is 0.745776670091, batchsize is 32, spend time is 236.697212934, 
+
+At distance 5.0, the best test AUC is 0.866098706553 at 21 epoch, the model has 35994 parameters, lr_rate is 0.00696659810863, dropout is 0.671249312989, batchsize is 32, spend time is 236.287015915, 
+
+At distance 5.0, the best test AUC is 0.660117383367 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00107005737187, dropout is 0.850525144787, batchsize is 64, spend time is 121.185606003, 
+
+At distance 5.0, the best test AUC is 0.82426373406 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00453011352805, dropout is 0.868872909155, batchsize is 64, spend time is 108.771466017, 
+
+At distance 5.0, the best test AUC is 0.795615657276 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00421287423782, dropout is 0.692007992458, batchsize is 64, spend time is 110.053647041, 
+
+At distance 5.0, the best test AUC is 0.55309543968 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00787380497054, dropout is 0.542624403224, batchsize is 128, spend time is 54.8798861504, 
+
+At distance 5.0, the best test AUC is 0.529335623965 at 29 epoch, the model has 35994 parameters, lr_rate is 0.000723045856997, dropout is 0.651776000326, batchsize is 128, spend time is 55.4027910233, 
+
+At distance 5.0, the best test AUC is 0.857190621957 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00943996723879, dropout is 0.797450337223, batchsize is 128, spend time is 55.4632468224, 
+
+At distance 5.0, the best test AUC is 0.583125156374 at 27 epoch, the model has 35994 parameters, lr_rate is 0.00577519753811, dropout is 0.53100443214, batchsize is 64, spend time is 109.833796024, 
+
+At distance 5.0, the best test AUC is 0.822720919874 at 27 epoch, the model has 35994 parameters, lr_rate is 0.00663906063188, dropout is 0.756135429829, batchsize is 128, spend time is 57.8955118656, 
+
+At distance 5.0, the best test AUC is 0.523382004985 at 1 epoch, the model has 35994 parameters, lr_rate is 0.00417969056737, dropout is 0.782169404136, batchsize is 32, spend time is 22.040309906, 
+
+At distance 5.0, the best test AUC is 0.521584732658 at 2 epoch, the model has 35994 parameters, lr_rate is 0.00846344194452, dropout is 0.731183375806, batchsize is 128, spend time is 6.39457583427, 
+
+At distance 5.0, the best test AUC is 0.527795160811 at 0 epoch, the model has 35994 parameters, lr_rate is 0.00372467590011, dropout is 0.706418268208, batchsize is 128, spend time is 6.40074110031, 
+
+At distance 5.0, the best test AUC is 0.595290184802 at 26 epoch, the model has 35994 parameters, lr_rate is 0.00495303762036, dropout is 0.681945422526, batchsize is 128, spend time is 57.0817558765, 
+
+At distance 5.0, the best test AUC is 0.635138038388 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00975389722918, dropout is 0.575632756118, batchsize is 128, spend time is 56.6991200447, 
+
+At distance 5.0, the best test AUC is 0.614905417531 at 26 epoch, the model has 35994 parameters, lr_rate is 0.0093012491254, dropout is 0.762855497045, batchsize is 64, spend time is 112.922357082, 
+
+At distance 5.0, the best test AUC is 0.609940968189 at 27 epoch, the model has 35994 parameters, lr_rate is 0.00294651467041, dropout is 0.640792975556, batchsize is 32, spend time is 236.048455954, 
+
+At distance 5.0, the best test AUC is 0.551538950643 at 26 epoch, the model has 35994 parameters, lr_rate is 0.00477844164546, dropout is 0.849829828151, batchsize is 128, spend time is 58.2166068554, 
+
+At distance 5.0, the best test AUC is 0.607776951445 at 25 epoch, the model has 35994 parameters, lr_rate is 0.00561904971377, dropout is 0.982951138268, batchsize is 64, spend time is 116.805484056, 
+
+At distance 5.0, the best test AUC is 0.562857456714 at 26 epoch, the model has 35994 parameters, lr_rate is 0.00833456455084, dropout is 0.921594136216, batchsize is 128, spend time is 63.7926709652, 
+
+At distance 5.0, the best test AUC is 0.544115762306 at 28 epoch, the model has 35994 parameters, lr_rate is 0.003055197745, dropout is 0.958278317409, batchsize is 128, spend time is 61.0372819901, 
+
+At distance 5.0, the best test AUC is 0.584613269011 at 25 epoch, the model has 35994 parameters, lr_rate is 0.0073835026769, dropout is 0.546821523161, batchsize is 128, spend time is 62.2397899628, 
+
+At distance 5.0, the best test AUC is 0.615961159186 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00335058444589, dropout is 0.730073973403, batchsize is 32, spend time is 244.47884202, 
+
+At distance 5.0, the best test AUC is 0.87000266642 at 27 epoch, the model has 35994 parameters, lr_rate is 0.00427408345147, dropout is 0.68931820752, batchsize is 32, spend time is 257.066959858, 
+
+At distance 5.0, the best test AUC is 0.875042425736 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00873772048843, dropout is 0.891238585867, batchsize is 128, spend time is 60.7710821629, 
+
+At distance 5.0, the best test AUC is 0.873920391789 at 24 epoch, the model has 35994 parameters, lr_rate is 0.00642782166708, dropout is 0.850243636364, batchsize is 32, spend time is 233.173421144, 
+
+At distance 5.0, the best test AUC is 0.858088616755 at 27 epoch, the model has 35994 parameters, lr_rate is 0.00791371531079, dropout is 0.876597567939, batchsize is 128, spend time is 62.7352018356, 
+
+At distance 5.0, the best test AUC is 0.865045586402 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00836900342078, dropout is 0.999526033968, batchsize is 128, spend time is 54.9080519676, 
+
+At distance 5.0, the best test AUC is 0.792196826166 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00276920381342, dropout is 0.575628764199, batchsize is 32, spend time is 236.093991041, 
+
+At distance 5.0, the best test AUC is 0.624322157253 at 24 epoch, the model has 35994 parameters, lr_rate is 0.00661381476899, dropout is 0.603925216366, batchsize is 64, spend time is 121.53636694, 
+
+At distance 5.0, the best test AUC is 0.577142910501 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00809535211261, dropout is 0.754442867816, batchsize is 128, spend time is 60.4712841511, 
+
+At distance 5.0, the best test AUC is 0.585983356428 at 18 epoch, the model has 35994 parameters, lr_rate is 0.00259717016204, dropout is 0.678476695028, batchsize is 64, spend time is 121.996412039, 
+
+At distance 5.0, the best test AUC is 0.648844703376 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00600577774488, dropout is 0.918188520224, batchsize is 32, spend time is 241.004187822, 
+
+At distance 5.0, the best test AUC is 0.866930173024 at 28 epoch, the model has 35994 parameters, lr_rate is 0.00561714260457, dropout is 0.856248223398, batchsize is 32, spend time is 243.50625205, 
+
+At distance 5.0, the best test AUC is 0.813498946903 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00241848595425, dropout is 0.809342538864, batchsize is 32, spend time is 246.024029016, 
+
+At distance 5.0, the best test AUC is 0.681420989507 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00902794904727, dropout is 0.937942396106, batchsize is 64, spend time is 115.638057947, 
+
+At distance 5.0, the best test AUC is 0.631907799323 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00140952101741, dropout is 0.987805406911, batchsize is 128, spend time is 56.9240329266, 
+
+At distance 5.0, the best test AUC is 0.712790885854 at 26 epoch, the model has 35994 parameters, lr_rate is 0.00657313401167, dropout is 0.898163648402, batchsize is 32, spend time is 235.145134926, 
+
+At distance 5.0, the best test AUC is 0.615896159193 at 28 epoch, the model has 35994 parameters, lr_rate is 0.00960423824989, dropout is 0.955251893855, batchsize is 64, spend time is 114.142813921, 
+
+At distance 5.0, the best test AUC is 0.535274329025 at 11 epoch, the model has 35994 parameters, lr_rate is 0.00152731469454, dropout is 0.664469463153, batchsize is 128, spend time is 59.7018809319, 
+
+At distance 5.0, the best test AUC is 0.881468527711 at 25 epoch, the model has 35994 parameters, lr_rate is 0.00590083432733, dropout is 0.729752904177, batchsize is 32, spend time is 241.833353996, 
+
+At distance 5.0, the best test AUC is 0.862141765783 at 29 epoch, the model has 35994 parameters, lr_rate is 0.0075142095763, dropout is 0.916790930543, batchsize is 64, spend time is 115.105764151, 
+
+At distance 5.0, the best test AUC is 0.835704859859 at 29 epoch, the model has 35994 parameters, lr_rate is 0.00547042795671, dropout is 0.733950250095, batchsize is 64, spend time is 117.207871914, 
+
+At distance 5.0, the best test AUC is 0.865773605144 at 27 epoch, the model has 35994 parameters, lr_rate is 0.00853309602698, dropout is 0.807539730459, batchsize is 64, spend time is 110.513094902, 
+

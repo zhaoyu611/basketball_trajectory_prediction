@@ -27,13 +27,12 @@ def plot_traj_MDN_mult(model, sess, val_dict, batch, sl_plot=8, ind=-1):
 
   fig = plt.figure()
   ax = fig.add_subplot(221, projection='3d')
-  ax.plot(batch[ind, 0, :], batch[ind, 1, :], batch[ind, 2, :], 'r')
+  ax.plot(batch[ind, 0, :], batch[ind, 1, :], batch[ind, 2, :])
 
   point = (batch[ind, 0, sl_plot], batch[
            ind, 1, sl_plot], batch[ind, 2, sl_plot])
   point_next = (batch[ind, 0, sl_plot + 1], batch[ind,
                                                   1, sl_plot + 1], batch[ind, 2, sl_plot + 1])
-
   ax.scatter(point[0], point[1], point[2])
   ax.scatter(point_next[0], point_next[1], point_next[2], color='r')
   # print point
@@ -62,31 +61,34 @@ def plot_traj_MDN_mult(model, sess, val_dict, batch, sl_plot=8, ind=-1):
   Z = np.sum(ZZ, axis=2)
   CS = ax.contour(X1 + point[0], X2 + point[1], Z.T)
   plt.clabel(CS, inline=1, fontsize=10)
-  ax.scatter(point[0], point[1])
+  # ax.scatter(point[0], point[1])
   ax.scatter(point_next[0], point_next[1], color='r')
   ax.set_xlabel('x coordinate')
   ax.set_ylabel('y coordinate')
+  ax.axis([point_next[0]-0.1,point_next[0]+0.1,point_next[1]-0.1,point_next[1]+0.1])
 
   ax = fig.add_subplot(2, 2, 3)
   X1, X3 = np.meshgrid(x1, x3)
   Z = np.sum(ZZ, axis=1)
   CS = ax.contour(X1 + point[0], X3 + point[2], Z.T)
   plt.clabel(CS, inline=1, fontsize=10)
-  ax.scatter(point[0], point[2])
+  # ax.scatter(point[0], point[2])
+  
   ax.scatter(point_next[0], point_next[2], color='r')
   ax.set_xlabel('x coordinate')
   ax.set_ylabel('Z coordinate')
+  ax.axis([point_next[0]-0.1,point_next[0]+0.1,point_next[2]-0.1,point_next[2]+0.1])
 
   ax = fig.add_subplot(2, 2, 4)
   X2, X3 = np.meshgrid(x2, x3)
   Z = np.sum(ZZ, axis=0)
   CS = ax.contour(X2 + point[1], X3 + point[2], Z.T)
   plt.clabel(CS, inline=1, fontsize=10)
-  ax.scatter(point[1], point[2])
+  # ax.scatter(point[1], point[2])
   ax.scatter(point_next[1], point_next[2], color='r')
   ax.set_xlabel('y coordinate')
   ax.set_ylabel('Z coordinate')
-
+  ax.axis([point_next[1]-0.1,point_next[1]+0.1,point_next[2]-0.1,point_next[2]+0.1])
   #-----start generate multiplty trajectories--------
   point_list = []
   trajectory_num = 2

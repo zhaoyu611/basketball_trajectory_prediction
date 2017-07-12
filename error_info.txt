@@ -1,0 +1,20 @@
+the input matrix must be positive semidefinite
+'module' object has no attribute 'unstack'
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite
+the input matrix must be positive semidefinite

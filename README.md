@@ -7,7 +7,7 @@ I did 2 jobs in the main, Hit or miss classification and trajecotry generating.
 In the first job, users can choose one of models, including CNN, LSTM, BLSTM, LSTM-MDN and BLSTM-MDN. And trajectory genarating only works for LSTM-MDN and BLSTM-MDN.
 
 # Setup
-* TesnsorFlow 1.0 <br>
+* TensorFlow 1.0 <br>
 * sklearn <br>
 * hyperopt <br>
 
@@ -56,6 +56,10 @@ You are welcome to pull requests or issues. <br>
 E-mail: zhaoyuafeu@gmail.com <br>
 Facebook: zhaoyuafeu <br>
 
+# Collaborate with us on similar research projects
 
+Join the [slack workspace](https://join.slack.com/t/neuraxio/shared_invite/zt-8lyw42c5-4PuWjTT8dQqeFK3at1s_dQ) for time series processing, where you can: 
 
-
+- Collaborate with us and other researchers on writing more time series processing papers, in the #research channel;
+- Do business with us and other companies for services and products related to time series processing, in the #business channel;
+- And more!
